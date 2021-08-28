@@ -12,6 +12,7 @@ void main() {
     theme: ThemeData(
       primaryColor: Colors.white,
       iconTheme: IconThemeData(color: Colors.white),
+      scaffoldBackgroundColor: Color.fromRGBO(240, 240, 240, 1),
     ),
   ));
 }
@@ -24,27 +25,14 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 5, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+  int _pageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: TabBarView(
-        controller: _tabController,
-        physics: NeverScrollableScrollPhysics(),
-        children: <Widget>[
+      body: IndexedStack(
+        index: _pageIndex,
+        children: [
           HomePage(),
           CatalogPage(),
           RecommendPage(),
@@ -52,18 +40,22 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
           RankPage(),
         ],
       ),
-      bottomNavigationBar: TabBar(
-        controller: _tabController,
-        indicator: BoxDecoration(),
-        labelColor: Colors.orange,
-        unselectedLabelColor: Colors.black,
-        tabs: <Widget>[
-          Tab(text: "首页", icon: Icon(Icons.house)),
-          Tab(text: "目录", icon: Icon(Icons.list)),
-          Tab(text: "推荐", icon: Icon(Icons.recommend)),
-          Tab(text: "更新", icon: Icon(Icons.refresh)),
-          Tab(text: "排行", icon: Icon(Icons.timeline)),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: "首页"),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: "目录"),
+          BottomNavigationBarItem(icon: Icon(Icons.recommend), label: "推荐"),
+          BottomNavigationBarItem(icon: Icon(Icons.refresh), label: "更新"),
+          BottomNavigationBarItem(icon: Icon(Icons.timeline), label: "排行"),
         ],
+        currentIndex: _pageIndex,
+        backgroundColor: Colors.white,
+        unselectedItemColor: Colors.black,
+        selectedItemColor: Colors.orange,
+        showUnselectedLabels: true,
+        onTap: (index) {
+          setState(() => _pageIndex = index);
+        },
       ),
     );
   }
