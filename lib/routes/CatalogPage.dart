@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 
-class HomePage extends StatefulWidget {
+
+class CatalogPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return HomePageState();
+    return CatalogPageState();
   }
 }
 
-class HomePageState extends State<HomePage> {
+class CatalogPageState extends State<CatalogPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('首页')),
+      appBar: AppBar(title: Text('目录')),
     );
   }
 }

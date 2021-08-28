@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-class HomePage extends StatefulWidget {
+class RankPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return HomePageState();
+    return RankPageState();
   }
 }
 
-class HomePageState extends State<HomePage> {
+class RankPageState extends State<RankPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('首页')),
+      appBar: AppBar(title: Text('排行榜')),
     );
   }
 }
