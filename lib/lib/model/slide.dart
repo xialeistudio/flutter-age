@@ -1,13 +1,13 @@
-class HomeSlide {
+class Slide {
   String? aid;
   String? title;
   String? newTitle;
   String? picUrl;
   int? time;
 
-  HomeSlide({this.aid, this.title, this.newTitle, this.picUrl, this.time});
+  Slide({this.aid, this.title, this.newTitle, this.picUrl, this.time});
 
-  HomeSlide.fromJson(dynamic json) {
+  Slide.fromJson(dynamic json) {
     aid = json["AID"];
     title = json["Title"];
     newTitle = json["NewTitle"];

@@ -1,8 +1,8 @@
-import 'package:age/routes/CatalogPage.dart';
-import 'package:age/routes/HomePage.dart';
-import 'package:age/routes/RankPage.dart';
-import 'package:age/routes/RecommendPage.dart';
-import 'package:age/routes/UpdatePage.dart';
+import 'package:age/routes/catalog.dart';
+import 'package:age/routes/home.dart';
+import 'package:age/routes/rank.dart';
+import 'package:age/routes/recommend.dart';
+import 'package:age/routes/update.dart';
 import 'package:flutter/material.dart';
 
 void main() {

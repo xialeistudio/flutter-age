@@ -1,8 +1,8 @@
-import 'dart:convert';
-
-import 'package:age/lib/http/home_slide.dart';
+import 'dart:collection';
+import 'package:age/lib/model/list_day_item.dart';
+import 'package:age/lib/model/list_item.dart';
+import 'package:age/lib/model/slide.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 
 var httpClient = HttpClient();
 
@@ -18,9 +18,24 @@ class HttpClient {
   );
 
   // 加载轮播图
-  Future<List<HomeSlide>> loadSlides() async {
+  Future<List<Slide>> loadSlides() async {
     var response = await _dio.get('/slipic');
     var list = response.data as List;
-    return list.map((e) => HomeSlide.fromJson(e)).toList();
+    Map<String, dynamic> a = HashMap();
+    return list.map((e) => Slide.fromJson(e)).toList();
+  }
+
+  // 加载首页数据
+  Future<Map<String, List<dynamic>>> loadHomeList({updateCount = 12, recommendCount = 12}) async {
+    var response = await _dio.get(
+      '/home-list',
+      queryParameters: {'update': updateCount, 'recommend': recommendCount},
+    );
+    var data = response.data as Map<String, dynamic>;
+    var result = HashMap<String, List<dynamic>>();
+    result["recommendList"] = (data["AniPreEvDay"]! as List<dynamic>).map((e) => ListItem.fromJson(e)).toList();
+    result["updateList"] = (data["AniPreUP"]! as List<dynamic>).map((e) => ListItem.fromJson(e)).toList();
+    result["weekList"] = (data["XinfansInfo"]! as List<dynamic>).map((e) => ListDayItem.fromJson(e)).toList();
+    return result;
   }
 }

@@ -1,18 +1,18 @@
-class HomeItem {
+class ListItem {
   String? aid;
   String? title;
   String? newTitle;
   String? picSmall;
   String? href;
 
-  HomeItem({
+  ListItem({
       this.aid, 
       this.title, 
       this.newTitle, 
       this.picSmall, 
       this.href});
 
-  HomeItem.fromJson(dynamic json) {
+  ListItem.fromJson(dynamic json) {
     aid = json["AID"];
     title = json["Title"];
     newTitle = json["NewTitle"];
