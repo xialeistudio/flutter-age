@@ -19,7 +19,7 @@ class Swipe extends StatelessWidget {
         itemCount: items.length,
         pagination: SwiperPagination(
           builder: SwiperPagination.dots,
-          // margin: EdgeInsets.only(bottom: 0),
+          margin: EdgeInsets.only(bottom: 0),
         ),
         itemBuilder: (context, index) {
           return SwipeItem(slide: items[index]);

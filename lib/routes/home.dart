@@ -22,10 +22,6 @@ class HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    loadData();
-  }
-
-  Future<void> loadData() async {
     loadList();
   }
 
@@ -52,21 +48,24 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('首页')),
-      body: CustomScrollView(
-        physics: BouncingScrollPhysics(),
-        slivers: [
-          HomeSwipeSliver(),
-          SliverPadding(
-            padding: const EdgeInsets.only(top: 8),
-            sliver: TitleSliver(title: "每日推荐", icon: Icons.star),
-          ),
-         ItemGridSliver(items: _recommendList),
-          SliverPadding(
-            padding: const EdgeInsets.only(top: 8),
-            sliver: TitleSliver(title: "最近更新", icon: Icons.star),
-          ),
-          ItemGridSliver(items: _updateList),
-        ],
+      body: RefreshIndicator(
+        child: CustomScrollView(
+          physics: BouncingScrollPhysics(),
+          slivers: [
+            HomeSwipeSliver(),
+            SliverPadding(
+              padding: const EdgeInsets.only(top: 8),
+              sliver: TitleSliver(title: "每日推荐", icon: Icons.star),
+            ),
+            ItemGridSliver(items: _recommendList),
+            SliverPadding(
+              padding: const EdgeInsets.only(top: 8),
+              sliver: TitleSliver(title: "最近更新", icon: Icons.star),
+            ),
+            ItemGridSliver(items: _updateList),
+          ],
+        ),
+        onRefresh: loadList,
       ),
     );
   }
