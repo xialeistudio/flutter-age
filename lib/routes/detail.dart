@@ -1,12 +1,16 @@
 import 'package:age/components/detail_animation_info.dart';
 import 'package:age/components/item_grid_sliver.dart';
 import 'package:age/components/title_bar.dart';
+import 'package:age/components/video_player_widget.dart';
 import 'package:age/lib/http/client.dart';
 import 'package:age/lib/model/album_info.dart';
 import 'package:age/lib/model/list_item.dart';
 import 'package:age/lib/model/video_info.dart';
+import 'package:age/lib/model/video_play_config.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 /// 详情页
 class DetailPage extends StatefulWidget {
@@ -25,12 +29,16 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   final String id;
   final String title;
 
+  VideoInfo? playingVideo;
+  VideoPlayConfig? videoPlayConfig;
+  bool isLoading = false;
+
   DetailPageState({required this.id, required this.title});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(title: Text(playingVideo == null ? title : "$title(${playingVideo!.title})")),
       body: SafeArea(
         child: FutureBuilder(
           future: loadData(),
@@ -59,7 +67,11 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
       child: CustomScrollView(
         physics: BouncingScrollPhysics(),
         slivers: [
-          SliverToBoxAdapter(child: DetailAnimationInfo(info: animationInfo)),
+          SliverToBoxAdapter(
+            child: videoPlayConfig == null
+                ? DetailAnimationInfo(info: animationInfo)
+                : VideoPlayerWidget(videoPlayConfig: videoPlayConfig!),
+          ),
           SliverToBoxAdapter(child: buildDescription(animationInfo)),
           SliverPadding(padding: const EdgeInsets.only(top: 8)),
           SliverToBoxAdapter(child: buildPlaylistHeader(playlists, controller)),
@@ -91,7 +103,10 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
     );
   }
 
-  Future<List<dynamic>> loadData() => httpClient.loadDetail(id);
+  Future<List<dynamic>> loadData() async {
+    var data = await httpClient.loadDetail(id);
+    return data;
+  }
 
   /// 构造播放列表Tab
   buildPlaylistHeader(List<List<VideoInfo>> playlists, TabController controller) {
@@ -120,12 +135,17 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
         spacing: 8,
         runSpacing: 10,
         children: videos.map((e) {
-          return Container(
-            child: Text(e.title!, style: TextStyle(fontSize: 14)),
-            width: MediaQuery.of(context).size.width * 0.3,
-            height: 30,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(border: Border.all(width: 0.5, color: Color.fromRGBO(200, 200, 200, 1))),
+          var borderColor = Color.fromRGBO(200, 200, 200, 1);
+          var textColor = Colors.black;
+          return InkWell(
+            child: Container(
+              child: Text(e.title!, style: TextStyle(fontSize: 14, color: textColor)),
+              width: MediaQuery.of(context).size.width * 0.3,
+              height: 30,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(border: Border.all(width: 0.5, color: borderColor)),
+            ),
+            onTap: () => playVideo(e),
           );
         }).toList(),
       ),
@@ -162,5 +182,25 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
         childCount: relationList.length * 2 - 1,
       ),
     );
+  }
+
+  /// 播放
+  playVideo(VideoInfo e) async {
+    if (isLoading) {
+      return;
+    }
+    isLoading = true;
+    try {
+      var globalConfig = await httpClient.loadGlobalPlayConfig();
+      var videoPlayConfig = await httpClient.loadVideoPlayConfig(e, globalConfig);
+      setState(() {
+        playingVideo = e;
+        this.videoPlayConfig = videoPlayConfig;
+      });
+    } on DioError catch (err) {
+      Fluttertoast.showToast(msg: "播放失败:${err.message}", gravity: ToastGravity.CENTER);
+    } finally {
+      isLoading = false;
+    }
   }
 }

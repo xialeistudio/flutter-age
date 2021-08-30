@@ -1,8 +1,13 @@
 import 'dart:collection';
+import 'dart:convert';
 import 'package:age/lib/model/album_info.dart';
 import 'package:age/lib/model/list_day_item.dart';
 import 'package:age/lib/model/list_item.dart';
+import 'package:age/lib/model/global_play_config.dart';
 import 'package:age/lib/model/slide.dart';
+import 'package:age/lib/model/video_info.dart';
+import 'package:age/lib/model/video_play_config.dart';
+import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 
@@ -61,5 +66,27 @@ class HttpClient {
     list.add(relationList);
     list.add(recommendList);
     return list;
+  }
+
+  /// 获取全局播放配置
+  Future<GlobalPlayConfig> loadGlobalPlayConfig() async {
+    var response = await _dio.get('/_getplay', options: buildCacheOptions(Duration(hours: 1)));
+    return GlobalPlayConfig.fromJson(response.data);
+  }
+
+  /// 获取视频播放配置
+  Future<VideoPlayConfig> loadVideoPlayConfig(VideoInfo videoInfo, GlobalPlayConfig globalPlayConfig) async {
+    var tokenString = "${globalPlayConfig.serverTime}{|}${videoInfo.playId}{|}${videoInfo.playVid}{|}$_playKey";
+    var signature = md5.convert(utf8.encode(tokenString)).toString();
+    var response = await _dio.get(
+      globalPlayConfig.location!,
+      queryParameters: {
+        'playid': videoInfo.playId,
+        'vid': videoInfo.playVid,
+        'kt': globalPlayConfig.serverTime,
+        'kp': signature,
+      },
+    );
+    return VideoPlayConfig.fromJson(response.data);
   }
 }
