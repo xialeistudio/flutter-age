@@ -54,10 +54,10 @@ class HttpClient {
   }
 
   /// 获取详情
-  Future<List<dynamic>> loadDetail(String id) async {
+  Future<List<dynamic>> loadDetail(String id, {cached = true}) async {
     var response = await _dio.get(
       "/detail/$id",
-      options: buildCacheOptions(Duration(hours: 1)),
+      options: cached ? buildCacheOptions(Duration(hours: 1)) : null,
     );
     var data = response.data as Map<String, dynamic>;
     var animationInfo = AnimationInfo.fromJson(data["AniInfo"]!);

@@ -29,6 +29,12 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   final String id;
   final String title;
 
+  // 页面数据
+  AnimationInfo? _animationInfo;
+  List<ListItem> _relationList = [];
+  List<ListItem> _recommendList = [];
+
+  // 播放相关
   VideoInfo? playingVideo;
   VideoPlayConfig? videoPlayConfig;
   bool isLoading = false;
@@ -36,26 +42,22 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   DetailPageState({required this.id, required this.title});
 
   @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    Widget child;
+    if (_animationInfo == null) {
+      child = Center(child: CircularProgressIndicator());
+    } else {
+      child = buildBody(_animationInfo!, _relationList, _recommendList);
+    }
     return Scaffold(
       appBar: AppBar(title: Text(playingVideo == null ? title : "$title(${playingVideo!.title})")),
-      body: SafeArea(
-        child: FutureBuilder(
-          future: loadData(),
-          builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.hasError) {
-                return Center(child: Text(snapshot.error.toString()));
-              }
-              var animationInfo = snapshot.data![0] as AnimationInfo;
-              var relationList = snapshot.data![1] as List<ListItem>;
-              var recommendList = snapshot.data![2] as List<ListItem>;
-              return buildBody(animationInfo, relationList, recommendList);
-            }
-            return Center(child: CircularProgressIndicator());
-          },
-        ),
-      ),
+      body: SafeArea(child: child),
     );
   }
 
@@ -85,7 +87,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
           SliverPadding(padding: const EdgeInsets.only(bottom: 20)),
         ],
       ),
-      onRefresh: loadData,
+      onRefresh: () => loadData(cached: false),
     );
   }
 
@@ -103,9 +105,13 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
     );
   }
 
-  Future<List<dynamic>> loadData() async {
-    var data = await httpClient.loadDetail(id);
-    return data;
+  Future<void> loadData({cached = true}) async {
+    var data = await httpClient.loadDetail(id, cached: cached);
+    setState(() {
+      _relationList = data[1]! as List<ListItem>;
+      _recommendList = data[2]! as List<ListItem>;
+      _animationInfo = data[0]! as AnimationInfo;
+    });
   }
 
   /// 构造播放列表Tab
