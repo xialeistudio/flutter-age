@@ -18,7 +18,7 @@ void main() {
       '/detail': (context) {
         var params = ModalRoute.of(context)!.settings.arguments as Map<String, String>;
         return DetailPage(id: params["id"]!, title: params["title"]!);
-      }
+      },
     },
   ));
 }

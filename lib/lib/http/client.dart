@@ -2,8 +2,10 @@ import 'dart:collection';
 import 'dart:convert';
 import 'package:age/lib/model/album_info.dart';
 import 'package:age/lib/model/list_day_item.dart';
+import 'package:age/lib/model/list_detail_item.dart';
 import 'package:age/lib/model/list_item.dart';
 import 'package:age/lib/model/global_play_config.dart';
+import 'package:age/lib/model/pair.dart';
 import 'package:age/lib/model/slide.dart';
 import 'package:age/lib/model/video_info.dart';
 import 'package:age/lib/model/video_play_config.dart';
@@ -88,5 +90,20 @@ class HttpClient {
       },
     );
     return VideoPlayConfig.fromJson(response.data);
+  }
+
+  /// 搜索
+  Future<Pair<List<ListDetailItem>, int>> search(String keyword, {page = 1}) async {
+    var response = await _dio.get(
+      '/search',
+      queryParameters: {
+        'page': page,
+        'query': keyword,
+      },
+    );
+    var data = response.data as Map<String, dynamic>;
+    var count = data["SeaCnt"]! as int;
+    var list = (data["AniPreL"]! as List<dynamic>).map((e) => ListDetailItem.fromJson(e)).toList();
+    return Pair(list, count);
   }
 }

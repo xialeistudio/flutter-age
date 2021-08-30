@@ -4,7 +4,7 @@ import 'package:age/components/title_bar.dart';
 import 'package:age/lib/http/client.dart';
 import 'package:age/lib/model/list_day_item.dart';
 import 'package:age/lib/model/list_item.dart';
-import 'package:age/lib/util.dart';
+import 'package:age/routes/search.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -47,7 +47,15 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('首页')),
+      appBar: AppBar(
+        title: Text('首页'),
+        actions: [
+          InkWell(
+            child: Icon(Icons.search),
+            onTap: () => showSearch(context: context, delegate: SearchBarDelegate()),
+          )
+        ],
+      ),
       body: RefreshIndicator(
         child: CustomScrollView(
           physics: BouncingScrollPhysics(),

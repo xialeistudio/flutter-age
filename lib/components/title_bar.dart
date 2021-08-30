@@ -4,11 +4,19 @@ import 'package:flutter/material.dart';
 /// 标题
 class TitleBar extends StatelessWidget {
   final String title;
+  final double fontSize;
+  final Widget? leading;
 
-  const TitleBar({Key? key, required this.title}) : super(key: key);
+  const TitleBar({Key? key, required this.title, this.leading, this.fontSize = 18}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> widgets = [
+      Expanded(child: Text(title, style: TextStyle(fontSize: fontSize, color: Colors.black))),
+    ];
+    if (leading != null) {
+      widgets.add(leading!);
+    }
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -17,7 +25,7 @@ class TitleBar extends StatelessWidget {
         ),
       ),
       padding: const EdgeInsets.all(10),
-      child: Text(title, style: TextStyle(fontSize: 18, color: Colors.black)),
+      child: Flex(direction: Axis.horizontal, children: widgets),
     );
   }
 }
