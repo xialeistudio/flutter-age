@@ -1,4 +1,5 @@
 import 'package:age/routes/catalog.dart';
+import 'package:age/routes/detail.dart';
 import 'package:age/routes/home.dart';
 import 'package:age/routes/rank.dart';
 import 'package:age/routes/recommend.dart';
@@ -11,9 +12,14 @@ void main() {
     home: MyApp(),
     theme: ThemeData(
       primaryColor: Colors.white,
-      iconTheme: IconThemeData(color: Colors.white),
       scaffoldBackgroundColor: Color.fromRGBO(240, 240, 240, 1),
     ),
+    routes: {
+      '/detail': (context) {
+        var params = ModalRoute.of(context)!.settings.arguments as Map<String, String>;
+        return DetailPage(id: params["id"]!, title: params["title"]!);
+      }
+    },
   ));
 }
 

@@ -1,6 +1,6 @@
 import 'package:age/components/home_swipe_sliver.dart';
 import 'package:age/components/item_grid_sliver.dart';
-import 'package:age/components/title_sliver.dart';
+import 'package:age/components/title_bar.dart';
 import 'package:age/lib/http/client.dart';
 import 'package:age/lib/model/list_day_item.dart';
 import 'package:age/lib/model/list_item.dart';
@@ -54,10 +54,10 @@ class HomePageState extends State<HomePage> {
           slivers: [
             HomeSwipeSliver(),
             SliverPadding(padding: const EdgeInsets.only(top: 8)),
-            TitleSliver(title: "每日推荐"),
+            SliverToBoxAdapter(child: TitleBar(title: "每日推荐")),
             ItemGridSliver(items: _recommendList),
             SliverPadding(padding: const EdgeInsets.only(top: 8)),
-            TitleSliver(title: "最近更新"),
+            SliverToBoxAdapter(child: TitleBar(title: "最近更新")),
             ItemGridSliver(items: _updateList),
             SliverPadding(padding: const EdgeInsets.only(bottom: 20)),
           ],

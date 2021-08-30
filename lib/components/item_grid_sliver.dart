@@ -1,3 +1,4 @@
+import 'package:age/components/poster.dart';
 import 'package:age/lib/model/list_item.dart';
 import 'package:age/lib/util.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,47 +14,8 @@ class ItemGridSliver extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverGrid(
       delegate: SliverChildBuilderDelegate(
-            (context, index) {
-          return Container(
-            decoration: BoxDecoration(color: Colors.white),
-            child: Column(
-              children: [
-                // 海报
-                Stack(
-                  alignment: AlignmentDirectional.topCenter,
-                  children: [
-                    Image.network(Util.adaptImageURL(items[index].picSmall!), fit: BoxFit.fitWidth),
-                    // 小标题
-                    Positioned(
-                      right: 4,
-                      bottom: 6,
-                      child: Container(
-                        child: Text(
-                          items[index].newTitle!,
-                          style: TextStyle(fontSize: 12, color: Colors.white),
-                          textAlign: TextAlign.center,
-                        ),
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: Color.fromRGBO(0, 0, 0, .65),
-                          borderRadius: BorderRadius.all(Radius.circular(100)),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 4),
-                // 大标题
-                Text(
-                  items[index].title!,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          );
+        (context, index) {
+          return GridItem(item: items[index]);
         },
         childCount: items.length,
       ),
@@ -63,6 +25,36 @@ class ItemGridSliver extends StatelessWidget {
         crossAxisCount: 3,
         childAspectRatio: 0.62,
       ),
+    );
+  }
+}
+
+class GridItem extends StatelessWidget {
+  final ListItem item;
+
+  const GridItem({Key? key, required this.item}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      child: Container(
+        decoration: BoxDecoration(color: Colors.white),
+        child: Column(
+          children: [
+            Poster(image: item.picSmall!, title: item.newTitle!),
+            SizedBox(height: 4),
+            // 大标题
+            Text(
+              item.title!,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+      onTap: () => Navigator.pushNamed(context, '/detail', arguments: {'id': item.aid, 'title': item.title}),
     );
   }
 }

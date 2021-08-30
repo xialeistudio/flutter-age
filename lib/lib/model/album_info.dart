@@ -37,8 +37,8 @@ class AnimationInfo {
   String? lastModified;
   String? filePath;
 
-  AnimationInfo({
-      this.aid, 
+  AnimationInfo(
+      {this.aid,
       this.region,
       this.type,
       this.title,
@@ -70,8 +70,8 @@ class AnimationInfo {
       this.rankCount,
       this.commentCount,
       this.collectCount,
-      this.modifiedTime, 
-      this.lastModified, 
+      this.modifiedTime,
+      this.lastModified,
       this.filePath});
 
   AnimationInfo.fromJson(dynamic json) {
@@ -105,7 +105,7 @@ class AnimationInfo {
     if (json["R在线播放All"] != null) {
       playlists = [];
       json["R在线播放All"].forEach((v) {
-        var playlist = [] as List<VideoInfo>;
+        List<VideoInfo> playlist = [];
         var videos = v as List<dynamic>;
         playlist.addAll(videos.map((e) => VideoInfo.fromJson(e)));
         playlists?.add(playlist);
@@ -119,5 +119,10 @@ class AnimationInfo {
     modifiedTime = json["ModifiedTime"];
     lastModified = json["LastModified"];
     filePath = json["FilePath"];
+  }
+
+  @override
+  String toString() {
+    return 'AnimationInfo{aid: $aid, title: $title}';
   }
 }
