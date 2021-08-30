@@ -16,7 +16,6 @@ class ItemGridSliver extends StatelessWidget {
             (context, index) {
           return Container(
             decoration: BoxDecoration(color: Colors.white),
-            padding: const EdgeInsets.all(4),
             child: Column(
               children: [
                 // 海报
@@ -26,7 +25,7 @@ class ItemGridSliver extends StatelessWidget {
                     Image.network(Util.adaptImageURL(items[index].picSmall!), fit: BoxFit.fitWidth),
                     // 小标题
                     Positioned(
-                      right: 2,
+                      right: 4,
                       bottom: 6,
                       child: Container(
                         child: Text(
@@ -59,8 +58,10 @@ class ItemGridSliver extends StatelessWidget {
         childCount: items.length,
       ),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisSpacing: 4,
+        mainAxisSpacing: 4,
         crossAxisCount: 3,
-        childAspectRatio: 0.65,
+        childAspectRatio: 0.62,
       ),
     );
   }

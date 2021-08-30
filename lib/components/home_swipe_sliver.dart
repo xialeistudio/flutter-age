@@ -30,8 +30,6 @@ class HomeSwipeSliverState extends State<HomeSwipeSliver> {
 
   @override
   Widget build(BuildContext context) {
-    return SliverList(
-      delegate: SliverChildListDelegate([Swipe(items: _items)]),
-    );
+    return SliverToBoxAdapter(child: Swipe(items: _items));
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'package:age/lib/model/album_info.dart';
 import 'package:age/lib/model/list_day_item.dart';
 import 'package:age/lib/model/list_item.dart';
 import 'package:age/lib/model/slide.dart';
@@ -37,5 +38,19 @@ class HttpClient {
     result["updateList"] = (data["AniPreUP"]! as List<dynamic>).map((e) => ListItem.fromJson(e)).toList();
     result["weekList"] = (data["XinfansInfo"]! as List<dynamic>).map((e) => ListDayItem.fromJson(e)).toList();
     return result;
+  }
+
+  /// 获取详情
+  Future<List<dynamic>> loadDetail(String id) async {
+    var response = await _dio.get("/detail/$id");
+    var data = response.data as Map<String, dynamic>;
+    var animationInfo = AnimationInfo.fromJson(data["AniInfo"]!);
+    var relationList = (data["AniPreRel"]! as List<dynamic>).map((e) => ListItem.fromJson(e)).toList();
+    var recommendList = (data["AniPreSim"]! as List<dynamic>).map((e) => ListItem.fromJson(e)).toList();
+    var list = [];
+    list.add(animationInfo);
+    list.add(relationList);
+    list.add(recommendList);
+    return list;
   }
 }

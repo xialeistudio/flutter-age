@@ -53,16 +53,13 @@ class HomePageState extends State<HomePage> {
           physics: BouncingScrollPhysics(),
           slivers: [
             HomeSwipeSliver(),
-            SliverPadding(
-              padding: const EdgeInsets.only(top: 8),
-              sliver: TitleSliver(title: "每日推荐", icon: Icons.star),
-            ),
+            SliverPadding(padding: const EdgeInsets.only(top: 8)),
+            TitleSliver(title: "每日推荐"),
             ItemGridSliver(items: _recommendList),
-            SliverPadding(
-              padding: const EdgeInsets.only(top: 8),
-              sliver: TitleSliver(title: "最近更新", icon: Icons.star),
-            ),
+            SliverPadding(padding: const EdgeInsets.only(top: 8)),
+            TitleSliver(title: "最近更新"),
             ItemGridSliver(items: _updateList),
+            SliverPadding(padding: const EdgeInsets.only(bottom: 20)),
           ],
         ),
         onRefresh: loadList,
