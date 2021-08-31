@@ -5,12 +5,7 @@ class ListItem {
   String? picSmall;
   String? href;
 
-  ListItem({
-      this.aid, 
-      this.title, 
-      this.newTitle, 
-      this.picSmall, 
-      this.href});
+  ListItem({this.aid, this.title, this.newTitle, this.picSmall, this.href});
 
   ListItem.fromJson(dynamic json) {
     aid = json["AID"];
@@ -30,4 +25,9 @@ class ListItem {
     return map;
   }
 
+  @override
+  bool operator ==(Object other) => identical(this, other) || other is ListItem && runtimeType == other.runtimeType && aid == other.aid;
+
+  @override
+  int get hashCode => aid.hashCode;
 }

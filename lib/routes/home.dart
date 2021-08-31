@@ -1,6 +1,7 @@
 import 'package:age/components/home_swipe_sliver.dart';
 import 'package:age/components/item_grid_sliver.dart';
 import 'package:age/components/title_bar.dart';
+import 'package:age/lib/global.dart';
 import 'package:age/lib/http/client.dart';
 import 'package:age/lib/model/list_day_item.dart';
 import 'package:age/lib/model/list_item.dart';
@@ -47,13 +48,7 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: InkWell(
-          child: Icon(Icons.search),
-          onTap: () => showSearch(context: context, delegate: SearchBarDelegate()),
-        ),
-        title: Text('首页'),
-      ),
+      appBar: buildAppBar(context, title: "首页"),
       body: RefreshIndicator(
         child: CustomScrollView(
           physics: BouncingScrollPhysics(),

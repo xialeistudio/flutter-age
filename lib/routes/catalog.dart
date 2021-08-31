@@ -3,6 +3,7 @@ import 'dart:core';
 import 'package:age/components/list_detail_item_widget.dart';
 import 'package:age/components/load_more_indicator.dart';
 import 'package:age/components/title_bar.dart';
+import 'package:age/lib/global.dart';
 import 'package:age/lib/http/client.dart';
 import 'package:age/lib/model/list_detail_item.dart';
 import 'package:age/routes/search.dart';
@@ -56,13 +57,7 @@ class CatalogPageState extends State<CatalogPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: InkWell(
-          child: Icon(Icons.search),
-          onTap: () => showSearch(context: context, delegate: SearchBarDelegate()),
-        ),
-        title: Text('全部动漫'),
-      ),
+      appBar: buildAppBar(context, title: "全部动漫"),
       body: filterData == null ? Center(child: CircularProgressIndicator()) : buildListView(),
     );
   }
@@ -82,8 +77,7 @@ class CatalogPageState extends State<CatalogPage> {
               SliverToBoxAdapter(
                 child: TitleBar(
                   title: "动漫列表",
-                  trailing:
-                      Row(children: [Text("共"), Text("$count", style: TextStyle(color: Colors.orange)), Text("部")]),
+                  trailing: Row(children: [Text("共"), Text("$count", style: TextStyle(color: Colors.orange)), Text("部")]),
                 ),
               ),
               SliverList(

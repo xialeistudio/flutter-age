@@ -1,5 +1,6 @@
 import 'package:age/routes/catalog.dart';
 import 'package:age/routes/detail.dart';
+import 'package:age/routes/history.dart';
 import 'package:age/routes/home.dart';
 import 'package:age/routes/rank.dart';
 import 'package:age/routes/recommend.dart';
@@ -20,6 +21,7 @@ void main() {
         var params = ModalRoute.of(context)!.settings.arguments as Map<String, String>;
         return DetailPage(id: params["id"]!, title: params["title"]!);
       },
+      '/history': (context) => HistoryPage()
     },
   ));
 }

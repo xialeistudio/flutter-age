@@ -1,8 +1,10 @@
 import 'package:age/components/item_grid_sliver.dart';
 import 'package:age/components/load_more_indicator.dart';
 import 'package:age/components/title_bar.dart';
+import 'package:age/lib/global.dart';
 import 'package:age/lib/http/client.dart';
 import 'package:age/lib/model/list_item.dart';
+import 'package:age/routes/search.dart';
 import 'package:flutter/material.dart';
 
 class UpdatePage extends StatefulWidget {
@@ -28,7 +30,7 @@ class UpdatePageState extends State<UpdatePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('最近更新')),
+      appBar: buildAppBar(context, title: "最近更新"),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () => onRefresh(cached: false),

@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:age/components/poster.dart';
 import 'package:age/lib/model/album_info.dart';
-import 'package:age/lib/util.dart';
+import 'package:age/lib/global.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

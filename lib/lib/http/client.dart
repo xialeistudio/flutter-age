@@ -15,7 +15,7 @@ import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_http_cache/dio_http_cache.dart';
 
-var httpClient = HttpClient();
+final httpClient = HttpClient();
 
 class HttpClient {
   static final String _playKey = 'agefans3382-getplay-1719';

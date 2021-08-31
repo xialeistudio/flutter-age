@@ -1,6 +1,8 @@
 import 'package:age/components/title_bar.dart';
+import 'package:age/lib/global.dart';
 import 'package:age/lib/http/client.dart';
 import 'package:age/lib/model/count_list_item.dart';
+import 'package:age/routes/search.dart';
 import 'package:flutter/material.dart';
 
 class RankPage extends StatefulWidget {
@@ -26,7 +28,7 @@ class RankPageState extends State<RankPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('排行榜')),
+      appBar: buildAppBar(context, title: "排行榜"),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () => onRefresh(cached: false),

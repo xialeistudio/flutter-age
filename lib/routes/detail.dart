@@ -4,6 +4,7 @@ import 'package:age/components/detail_animation_info.dart';
 import 'package:age/components/item_grid_sliver.dart';
 import 'package:age/components/title_bar.dart';
 import 'package:age/components/video_player_widget.dart';
+import 'package:age/lib/history_manager.dart';
 import 'package:age/lib/http/client.dart';
 import 'package:age/lib/model/album_info.dart';
 import 'package:age/lib/model/list_item.dart';
@@ -136,11 +137,20 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
 
   Future<void> loadData({cached = true}) async {
     var data = await httpClient.loadDetail(id, cached: cached);
+    var animationInfo = data[0]! as AnimationInfo;
     setState(() {
       _relationList = data[1]! as List<ListItem>;
       _recommendList = data[2]! as List<ListItem>;
-      _animationInfo = data[0]! as AnimationInfo;
+      _animationInfo = animationInfo;
     });
+    historyManager.add(
+      ListItem(
+        aid: animationInfo.aid,
+        title: animationInfo.title,
+        newTitle: animationInfo.newTitle,
+        picSmall: animationInfo.coverSmall,
+      ),
+    );
   }
 
   /// 构造播放列表Tab
