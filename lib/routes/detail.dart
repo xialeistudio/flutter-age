@@ -11,6 +11,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 /// 详情页
 class DetailPage extends StatefulWidget {
@@ -35,8 +36,8 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   List<ListItem> _recommendList = [];
 
   // 播放相关
-  VideoInfo? playingVideo;
-  VideoPlayConfig? videoPlayConfig;
+  ValueNotifier<String> playingVideoUrl = ValueNotifier("");
+  ValueNotifier<String> playingVideoVid = ValueNotifier("");
   bool isLoading = false;
 
   DetailPageState({required this.id, required this.title});
@@ -56,7 +57,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
       child = buildBody(_animationInfo!, _relationList, _recommendList);
     }
     return Scaffold(
-      appBar: AppBar(title: Text(playingVideo == null ? title : "$title(${playingVideo!.title})")),
+      appBar: AppBar(title: Text(title)),
       body: SafeArea(child: child),
     );
   }
@@ -70,9 +71,15 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
         physics: BouncingScrollPhysics(),
         slivers: [
           SliverToBoxAdapter(
-            child: videoPlayConfig == null
-                ? DetailAnimationInfo(info: animationInfo)
-                : VideoPlayerWidget(videoPlayConfig: videoPlayConfig!),
+            child: ValueListenableBuilder(
+              builder: (context, String value, child) {
+                if (value == "") {
+                  return DetailAnimationInfo(info: animationInfo);
+                }
+                return VideoPlayerWidget(url: value);
+              },
+              valueListenable: playingVideoUrl,
+            ),
           ),
           SliverToBoxAdapter(child: buildDescription(animationInfo)),
           SliverPadding(padding: const EdgeInsets.only(top: 8)),
@@ -141,15 +148,24 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
         spacing: 8,
         runSpacing: 10,
         children: videos.map((e) {
-          var borderColor = Color.fromRGBO(200, 200, 200, 1);
-          var textColor = Colors.black;
           return InkWell(
-            child: Container(
-              child: Text(e.title!, style: TextStyle(fontSize: 14, color: textColor)),
-              width: MediaQuery.of(context).size.width * 0.3,
-              height: 30,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(border: Border.all(width: 0.5, color: borderColor)),
+            child: ValueListenableBuilder(
+              builder: (context, String value, child) {
+                var borderColor = Color.fromRGBO(200, 200, 200, 1);
+                var textColor = Colors.black;
+                if (value == e.playVid) {
+                  borderColor = Colors.orange;
+                  textColor = borderColor;
+                }
+                return Container(
+                  child: Text(e.title!, style: TextStyle(fontSize: 14, color: textColor)),
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  height: 30,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(border: Border.all(width: 0.5, color: borderColor)),
+                );
+              },
+              valueListenable: playingVideoVid,
             ),
             onTap: () => playVideo(e),
           );
@@ -198,11 +214,9 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
     isLoading = true;
     try {
       var globalConfig = await httpClient.loadGlobalPlayConfig();
-      var videoPlayConfig = await httpClient.loadVideoPlayConfig(e, globalConfig);
-      setState(() {
-        playingVideo = e;
-        this.videoPlayConfig = videoPlayConfig;
-      });
+      var playConfig = await httpClient.loadVideoPlayConfig(e, globalConfig);
+      playingVideoUrl.value = playConfig.purlf! + playConfig.vurl!;
+      playingVideoVid.value = e.playVid!;
     } on DioError catch (err) {
       Fluttertoast.showToast(msg: "播放失败:${err.message}", gravity: ToastGravity.CENTER);
     } finally {

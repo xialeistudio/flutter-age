@@ -11,22 +11,22 @@ import 'package:webview_flutter/webview_flutter.dart';
 /// 播放器
 /// 如果链接以mp4结尾，调用原生播放器，否则用Webview
 class VideoPlayerWidget extends StatefulWidget {
-  final VideoPlayConfig videoPlayConfig;
+  final String url;
 
-  const VideoPlayerWidget({Key? key, required this.videoPlayConfig}) : super(key: key);
+  const VideoPlayerWidget({Key? key, required this.url}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return VideoPlayerWidgetState(videoPlayConfig: videoPlayConfig);
+    return VideoPlayerWidgetState(url: url);
   }
 }
 
 class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
-  final VideoPlayConfig videoPlayConfig;
+  final String url;
   final Completer<WebViewController> _controller = Completer<WebViewController>();
   String? _videoUrl;
 
-  VideoPlayerWidgetState({required this.videoPlayConfig});
+  VideoPlayerWidgetState({required this.url});
 
   @override
   void initState() {
@@ -44,7 +44,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       children: [
         Container(
           child: WebView(
-            initialUrl: "${videoPlayConfig.purlf}${videoPlayConfig.vurl}",
+            initialUrl: url,
             javascriptMode: JavascriptMode.unrestricted,
             allowsInlineMediaPlayback: true,
             onWebViewCreated: (WebViewController webViewController) {
@@ -53,12 +53,8 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
             onPageFinished: (url) {
               findVideoUrl();
             },
-            navigationDelegate: (request) {
-              print("request ${request.url}");
-              return NavigationDecision.navigate;
-            },
           ),
-          height: 220,
+          height: 250,
         ),
         Container(
           decoration: BoxDecoration(color: Colors.white),
