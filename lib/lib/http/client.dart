@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:convert';
 import 'package:age/lib/model/album_info.dart';
+import 'package:age/lib/model/count_list_item.dart';
 import 'package:age/lib/model/list_day_item.dart';
 import 'package:age/lib/model/list_detail_item.dart';
 import 'package:age/lib/model/list_item.dart';
@@ -147,6 +148,7 @@ class HttpClient {
     var list = (data["AniPre"]! as List<dynamic>).map((e) => ListItem.fromJson(e)).toList();
     return Pair(list, count);
   }
+
   /// 最近更新
   Future<Pair<List<ListItem>, int>> loadUpdate({page = 1, size = 10}) async {
     var response = await _dio.get(
@@ -156,6 +158,23 @@ class HttpClient {
     var data = response.data as Map<String, dynamic>;
     var count = data["AllCnt"]! as int;
     var list = (data["AniPre"]! as List<dynamic>).map((e) => ListItem.fromJson(e)).toList();
+    return Pair(list, count);
+  }
+
+  /// 排行榜
+  Future<Pair<List<CountListItem>, int>> loadRank({page = 1, size = 75, int? year, cached = true}) async {
+    var params = {'page': page, 'size': size};
+    if (year != null && year > 0) {
+      params['value'] = year;
+    }
+    var response = await _dio.get(
+      '/rank',
+      queryParameters: params,
+      options: defaultCacheOptions(cached: cached),
+    );
+    var data = response.data as Map<String, dynamic>;
+    var count = data["AllCnt"]! as int;
+    var list = (data["AniRankPre"]! as List<dynamic>).map((e) => CountListItem.fromJson(e)).toList();
     return Pair(list, count);
   }
 }
