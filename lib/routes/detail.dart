@@ -7,6 +7,7 @@ import 'package:age/lib/model/album_info.dart';
 import 'package:age/lib/model/list_item.dart';
 import 'package:age/lib/model/video_info.dart';
 import 'package:age/lib/model/video_play_config.dart';
+import 'package:age/routes/detail_playlist.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +38,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
 
   // 播放相关
   ValueNotifier<String> playingVideoUrl = ValueNotifier("");
-  ValueNotifier<String> playingVideoVid = ValueNotifier("");
+  ValueNotifier<VideoInfo> playingVideo = ValueNotifier(VideoInfo());
   bool isLoading = false;
 
   DetailPageState({required this.id, required this.title});
@@ -57,7 +58,17 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
       child = buildBody(_animationInfo!, _relationList, _recommendList);
     }
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(
+        title: ValueListenableBuilder(
+          builder: (context, VideoInfo value, child) {
+            if (value.playVid == null) {
+              return Text(title);
+            }
+            return Text("$title(${value.title!})");
+          },
+          valueListenable: playingVideo,
+        ),
+      ),
       body: SafeArea(child: child),
     );
   }
@@ -125,15 +136,37 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   buildPlaylistHeader(List<List<VideoInfo>> playlists, TabController controller) {
     return Container(
       decoration: BoxDecoration(color: Colors.white),
-      child: Column(
+      child: Flex(
+        direction: Axis.horizontal,
         children: [
-          TabBar(
-            controller: controller,
-            indicatorColor: Colors.orange,
-            labelColor: Colors.orange,
-            unselectedLabelColor: Colors.black,
-            tabs: playlists.asMap().entries.map((entry) => Tab(text: "播放列表${entry.key + 1}")).toList(),
+          Expanded(
+            child: TabBar(
+              controller: controller,
+              indicatorColor: Colors.orange,
+              labelColor: Colors.orange,
+              unselectedLabelColor: Colors.black,
+              tabs: playlists.asMap().entries.map((entry) => Tab(text: "播放列表${entry.key + 1}")).toList(),
+            ),
           ),
+          IconButton(
+              onPressed: () async {
+                var selected = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return DetailPlaylistPage(playlists: playlists);
+                    },
+                    fullscreenDialog: true,
+                  ),
+                );
+                if (selected == null) {
+                  return;
+                }
+                playVideo(selected);
+              },
+              icon: Icon(Icons.arrow_forward_ios),
+              iconSize: 18,
+              enableFeedback: false)
         ],
       ),
     );
@@ -149,10 +182,10 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
           var item = videos[index];
           return InkWell(
             child: ValueListenableBuilder(
-              builder: (context, String value, child) {
+              builder: (context, VideoInfo value, child) {
                 var borderColor = Color.fromRGBO(200, 200, 200, 1);
                 var textColor = Colors.black;
-                if (value == item.playVid) {
+                if (value.playVid == item.playVid) {
                   borderColor = Colors.orange;
                   textColor = borderColor;
                 }
@@ -164,7 +197,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
                   decoration: BoxDecoration(border: Border.all(width: 0.5, color: borderColor)),
                 );
               },
-              valueListenable: playingVideoVid,
+              valueListenable: playingVideo,
             ),
             onTap: () => playVideo(item),
           );
@@ -208,16 +241,16 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   }
 
   /// 播放
-  playVideo(VideoInfo e) async {
+  playVideo(VideoInfo video) async {
     if (isLoading) {
       return;
     }
     isLoading = true;
     try {
       var globalConfig = await httpClient.loadGlobalPlayConfig();
-      var playConfig = await httpClient.loadVideoPlayConfig(e, globalConfig);
+      var playConfig = await httpClient.loadVideoPlayConfig(video, globalConfig);
       playingVideoUrl.value = playConfig.purlf! + playConfig.vurl!;
-      playingVideoVid.value = e.playVid!;
+      playingVideo.value = video;
     } on DioError catch (err) {
       Fluttertoast.showToast(msg: "播放失败:${err.message}", gravity: ToastGravity.CENTER);
     } finally {
