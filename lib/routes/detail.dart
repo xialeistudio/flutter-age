@@ -32,7 +32,7 @@ class DetailPage extends StatefulWidget {
 class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   final String id;
   final String title;
-  final Completer<WebViewController> webviewControllerFuture = Completer();
+  WebViewController? _webViewController;
 
   // 页面数据
   AnimationInfo? _animationInfo;
@@ -60,20 +60,29 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
     } else {
       child = buildBody(_animationInfo!, _relationList, _recommendList);
     }
-    return Scaffold(
-      appBar: AppBar(
-        title: ValueListenableBuilder(
-          builder: (context, VideoInfo value, child) {
-            if (value.playVid == null) {
-              return Text(title);
-            }
-            return Text("$title(${value.title!})");
-          },
-          valueListenable: playingVideo,
+    return WillPopScope(
+      child: Scaffold(
+        appBar: AppBar(
+          title: ValueListenableBuilder(
+            builder: (context, VideoInfo value, child) {
+              if (value.playVid == null) {
+                return Text(title);
+              }
+              return Text("$title(${value.title!})");
+            },
+            valueListenable: playingVideo,
+          ),
         ),
+        body: SafeArea(child: child),
       ),
-      body: SafeArea(child: child),
+      onWillPop: stopWebview,
     );
+  }
+
+  /// 停止webview
+  Future<bool> stopWebview() async {
+    _webViewController?.loadUrl("about:blank");
+    return true;
   }
 
   /// 构造正文
@@ -91,7 +100,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
                   if (value == "") {
                     return DetailAnimationInfo(info: animationInfo);
                   }
-                  return VideoPlayerWidget(url: value, controllerFuture: webviewControllerFuture);
+                  return VideoPlayerWidget(url: value, onWebviewCreated: (controller) => _webViewController = controller);
                 },
                 valueListenable: playingVideoUrl,
               ),
@@ -145,9 +154,11 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
         onPressed: () async {
           var selected = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) {
-              return DetailPlaylistPage(playlists: playlists, defaultSelected: playingVideo.value);
-            }),
+            MaterialPageRoute(
+                builder: (context) {
+                  return DetailPlaylistPage(playlists: playlists, defaultSelected: playingVideo.value);
+                },
+                fullscreenDialog: true),
           );
           if (selected == null) {
             return;
@@ -229,7 +240,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
       var playConfig = await httpClient.loadVideoPlayConfig(video, globalConfig);
       playingVideoUrl.value = playConfig.purlf! + playConfig.vurl!;
       playingVideo.value = video;
-      webviewControllerFuture.future.then((controller) => controller.loadUrl(playingVideoUrl.value));
+      _webViewController?.loadUrl(playingVideoUrl.value);
     } on DioError catch (err) {
       Fluttertoast.showToast(msg: "播放失败:${err.message}", gravity: ToastGravity.CENTER);
     } finally {

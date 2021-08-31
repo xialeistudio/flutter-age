@@ -13,6 +13,7 @@ void main() {
     theme: ThemeData(
       primaryColor: Colors.white,
       scaffoldBackgroundColor: Color.fromRGBO(240, 240, 240, 1),
+      fontFamily: "Operator Mono",
     ),
     routes: {
       '/detail': (context) {

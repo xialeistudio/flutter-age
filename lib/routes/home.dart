@@ -26,8 +26,8 @@ class HomePageState extends State<HomePage> {
   }
 
   // 列表数据
-  Future<void> loadList() async {
-    var data = await httpClient.loadHomeList();
+  Future<void> loadList({cached = true}) async {
+    var data = await httpClient.loadHomeList(cached: cached);
     setState(() {
       _recommendList = data['recommendList'] as List<ListItem>;
       _updateList = data['updateList'] as List<ListItem>;
@@ -68,7 +68,7 @@ class HomePageState extends State<HomePage> {
             SliverPadding(padding: const EdgeInsets.only(bottom: 20)),
           ],
         ),
-        onRefresh: loadList,
+        onRefresh: () => loadList(cached: false),
       ),
     );
   }
