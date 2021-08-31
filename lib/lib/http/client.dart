@@ -147,4 +147,15 @@ class HttpClient {
     var list = (data["AniPre"]! as List<dynamic>).map((e) => ListItem.fromJson(e)).toList();
     return Pair(list, count);
   }
+  /// 最近更新
+  Future<Pair<List<ListItem>, int>> loadUpdate({page = 1, size = 10}) async {
+    var response = await _dio.get(
+      '/update',
+      queryParameters: {'page': page, 'size': size},
+    );
+    var data = response.data as Map<String, dynamic>;
+    var count = data["AllCnt"]! as int;
+    var list = (data["AniPre"]! as List<dynamic>).map((e) => ListItem.fromJson(e)).toList();
+    return Pair(list, count);
+  }
 }
