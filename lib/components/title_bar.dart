@@ -5,17 +5,17 @@ import 'package:flutter/material.dart';
 class TitleBar extends StatelessWidget {
   final String title;
   final double fontSize;
-  final Widget? leading;
+  final Widget? trailing;
 
-  const TitleBar({Key? key, required this.title, this.leading, this.fontSize = 18}) : super(key: key);
+  const TitleBar({Key? key, required this.title, this.trailing, this.fontSize = 18}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     List<Widget> widgets = [
       Expanded(child: Text(title, style: TextStyle(fontSize: fontSize, color: Colors.black))),
     ];
-    if (leading != null) {
-      widgets.add(leading!);
+    if (trailing != null) {
+      widgets.add(trailing!);
     }
     return Container(
       decoration: BoxDecoration(

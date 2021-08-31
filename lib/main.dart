@@ -49,7 +49,7 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "首页"),
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: "目录"),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: "列表"),
           BottomNavigationBarItem(icon: Icon(Icons.recommend), label: "推荐"),
           BottomNavigationBarItem(icon: Icon(Icons.refresh), label: "更新"),
           BottomNavigationBarItem(icon: Icon(Icons.timeline), label: "排行"),

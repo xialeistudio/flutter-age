@@ -7,6 +7,7 @@ import 'package:age/lib/model/list_item.dart';
 import 'package:age/lib/model/global_play_config.dart';
 import 'package:age/lib/model/pair.dart';
 import 'package:age/lib/model/slide.dart';
+import 'package:age/lib/model/tunple.dart';
 import 'package:age/lib/model/video_info.dart';
 import 'package:age/lib/model/video_play_config.dart';
 import 'package:crypto/crypto.dart';
@@ -32,18 +33,18 @@ class HttpClient {
   }
 
   // 加载轮播图
-  Future<List<Slide>> loadSlides() async {
-    var response = await _dio.get('/slipic', options: buildCacheOptions(Duration(hours: 1)));
+  Future<List<Slide>> loadSlides({cached = true}) async {
+    var response = await _dio.get('/slipic', options: defaultCacheOptions(cached: cached));
     var list = response.data as List;
     return list.map((e) => Slide.fromJson(e)).toList();
   }
 
   // 加载首页数据
-  Future<Map<String, List<dynamic>>> loadHomeList({updateCount = 12, recommendCount = 12}) async {
+  Future<Map<String, List<dynamic>>> loadHomeList({updateCount = 12, recommendCount = 12, cached = true}) async {
     var response = await _dio.get(
       '/home-list',
       queryParameters: {'update': updateCount, 'recommend': recommendCount},
-      options: buildCacheOptions(Duration(hours: 1)),
+      options: defaultCacheOptions(cached: cached),
     );
     var data = response.data as Map<String, dynamic>;
     var result = HashMap<String, List<dynamic>>();
@@ -57,7 +58,7 @@ class HttpClient {
   Future<List<dynamic>> loadDetail(String id, {cached = true}) async {
     var response = await _dio.get(
       "/detail/$id",
-      options: cached ? buildCacheOptions(Duration(hours: 1)) : null,
+      options: defaultCacheOptions(cached: cached),
     );
     var data = response.data as Map<String, dynamic>;
     var animationInfo = AnimationInfo.fromJson(data["AniInfo"]!);
@@ -70,9 +71,11 @@ class HttpClient {
     return list;
   }
 
+  Options? defaultCacheOptions({cached = true}) => cached ? buildCacheOptions(Duration(hours: 1)) : null;
+
   /// 获取全局播放配置
   Future<GlobalPlayConfig> loadGlobalPlayConfig() async {
-    var response = await _dio.get('/_getplay', options: buildCacheOptions(Duration(hours: 1)));
+    var response = await _dio.get('/_getplay', options: defaultCacheOptions());
     return GlobalPlayConfig.fromJson(response.data);
   }
 
@@ -105,5 +108,31 @@ class HttpClient {
     var count = data["SeaCnt"]! as int;
     var list = (data["AniPreL"]! as List<dynamic>).map((e) => ListDetailItem.fromJson(e)).toList();
     return Pair(list, count);
+  }
+
+  /// 加载列表
+  Future<Tuple<Map<String, List<String>>, List<ListDetailItem>, int>> loadList(
+      {int page = 1, int size = 10, Map<String, String>? query, cached = true}) async {
+    query = query ?? {};
+    query['page'] = page.toString();
+    query['size'] = size.toString();
+    var response = await _dio.get(
+      '/catalog',
+      queryParameters: query,
+      options: defaultCacheOptions(cached: cached),
+    );
+    var data = response.data as Map<String, dynamic>;
+    var count = data["AllCnt"]! as int;
+    var list = (data["AniPreL"]! as List<dynamic>).map((e) => ListDetailItem.fromJson(e)).toList();
+    Map<String, List<String>> filter = {};
+    data.entries.forEach((element) {
+      var key = element.key;
+      if (!key.startsWith("Labels")) {
+        return;
+      }
+      var values = (element.value as List<dynamic>).map((e) => e.toString()).toList();
+      filter[values[0]] = values.sublist(1);
+    });
+    return Tuple.name(filter, list, count);
   }
 }

@@ -82,7 +82,7 @@ class SearchBarDelegate extends SearchDelegate<String> {
           child: TitleBar(
             fontSize: 16,
             title: "[$query]搜索结果",
-            leading: Row(children: [Text("共"), Text("$count", style: TextStyle(color: Colors.orange)), Text("部")]),
+            trailing: Row(children: [Text("共"), Text("$count", style: TextStyle(color: Colors.orange)), Text("部")]),
           ),
         ),
         SliverList(
