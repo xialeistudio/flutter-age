@@ -1,6 +1,7 @@
 import 'dart:core';
 
 import 'package:age/components/list_detail_item_widget.dart';
+import 'package:age/components/load_more_indicator.dart';
 import 'package:age/components/title_bar.dart';
 import 'package:age/lib/http/client.dart';
 import 'package:age/lib/model/list_detail_item.dart';
@@ -19,23 +20,14 @@ class CatalogPageState extends State<CatalogPage> {
   List<ListDetailItem> list = [];
   int count = 0;
   int page = 1;
-  final int size = 10;
-  bool loading = false;
   bool hasMore = true;
+  final int size = 10;
   Map<String, String> filter = {'order': '更新时间'};
-  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(onScroll);
     onRefresh();
-  }
-
-  @override
-  void dispose() {
-    _scrollController.removeListener(onScroll);
-    super.dispose();
   }
 
   /// 下拉刷新
@@ -47,7 +39,6 @@ class CatalogPageState extends State<CatalogPage> {
       list = data.second;
       count = data.third;
       hasMore = data.second.length >= size;
-      loading = false;
     });
   }
 
@@ -59,7 +50,6 @@ class CatalogPageState extends State<CatalogPage> {
       list.addAll(data.second);
       count = data.third;
       hasMore = data.second.length >= size;
-      loading = false;
     });
   }
 
@@ -82,28 +72,30 @@ class CatalogPageState extends State<CatalogPage> {
     return SafeArea(
       child: RefreshIndicator(
         onRefresh: () => onRefresh(cached: false),
-        child: CustomScrollView(
-          controller: _scrollController,
-          slivers: [
-            ListFilterSliver(filterData: filterData!, filter: filter, onChange: onFilterChange),
-            SliverPadding(padding: const EdgeInsets.only(bottom: 10)),
-            SliverToBoxAdapter(
-              child: TitleBar(
-                title: "动漫列表",
-                trailing: Row(children: [Text("共"), Text("$count", style: TextStyle(color: Colors.orange)), Text("部")]),
+        child: LoadMoreIndicator(
+          hasMore: hasMore,
+          onLoadMore: onLoadMore,
+          child: CustomScrollView(
+            slivers: [
+              ListFilterSliver(filterData: filterData!, filter: filter, onChange: onFilterChange),
+              SliverPadding(padding: const EdgeInsets.only(bottom: 10)),
+              SliverToBoxAdapter(
+                child: TitleBar(
+                  title: "动漫列表",
+                  trailing:
+                      Row(children: [Text("共"), Text("$count", style: TextStyle(color: Colors.orange)), Text("部")]),
+                ),
               ),
-            ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  return ListDetailItemWidget(item: list[index]);
-                },
-                childCount: list.length,
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    return ListDetailItemWidget(item: list[index]);
+                  },
+                  childCount: list.length,
+                ),
               ),
-            ),
-            SliverToBoxAdapter(child: LoadMoreBar(isLoading: loading, hasMore: hasMore)),
-            SliverPadding(padding: const EdgeInsets.only(bottom: 20)),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -115,47 +107,6 @@ class CatalogPageState extends State<CatalogPage> {
       filter[field] = value;
       onRefresh();
     });
-  }
-
-  /// 滚动回调
-  void onScroll() {
-    if (_scrollController.position.pixels != _scrollController.position.maxScrollExtent) {
-      return;
-    }
-    if (!hasMore || loading) {
-      return;
-    }
-    setState(() {
-      loading = true;
-      onLoadMore();
-    });
-  }
-}
-
-/// 加载更多
-class LoadMoreBar extends StatelessWidget {
-  final bool isLoading;
-  final bool hasMore;
-
-  const LoadMoreBar({Key? key, required this.isLoading, required this.hasMore}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    if (isLoading) {
-      return Container(
-        alignment: Alignment.center,
-        child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator()),
-        padding: const EdgeInsets.symmetric(vertical: 4),
-      );
-    }
-    if (!hasMore) {
-      return Container(
-        child: Text('加载完毕', style: TextStyle(color: Colors.grey)),
-        alignment: Alignment.center,
-        padding: const EdgeInsets.symmetric(vertical: 4),
-      );
-    }
-    return Container();
   }
 }
 
