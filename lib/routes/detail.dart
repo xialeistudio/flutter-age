@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:age/components/detail_animation_info.dart';
 import 'package:age/components/item_grid_sliver.dart';
 import 'package:age/components/title_bar.dart';
@@ -31,6 +33,7 @@ class DetailPage extends StatefulWidget {
 class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   final String id;
   final String title;
+  final Completer<WebViewController> webviewControllerFuture = Completer();
 
   // 页面数据
   AnimationInfo? _animationInfo;
@@ -77,7 +80,6 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   /// 构造正文
   Widget buildBody(AnimationInfo animationInfo, List<ListItem> relationList, recommendList) {
     var playlists = animationInfo.playlists!.where((element) => element.length > 0).toList();
-    var controller = TabController(length: playlists.length, vsync: this);
     return DefaultTabController(
       length: playlists.length,
       child: RefreshIndicator(
@@ -90,7 +92,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
                   if (value == "") {
                     return DetailAnimationInfo(info: animationInfo);
                   }
-                  return VideoPlayerWidget(url: value);
+                  return VideoPlayerWidget(url: value, controllerFuture: webviewControllerFuture);
                 },
                 valueListenable: playingVideoUrl,
               ),
@@ -228,6 +230,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
       var playConfig = await httpClient.loadVideoPlayConfig(video, globalConfig);
       playingVideoUrl.value = playConfig.purlf! + playConfig.vurl!;
       playingVideo.value = video;
+      webviewControllerFuture.future.then((controller) => controller.loadUrl(playingVideoUrl.value));
     } on DioError catch (err) {
       Fluttertoast.showToast(msg: "播放失败:${err.message}", gravity: ToastGravity.CENTER);
     } finally {

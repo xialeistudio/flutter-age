@@ -10,36 +10,14 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 /// 播放器
 /// 如果链接以mp4结尾，调用原生播放器，否则用Webview
-class VideoPlayerWidget extends StatefulWidget {
+class VideoPlayerWidget extends StatelessWidget {
   final String url;
+  final Completer<WebViewController> controllerFuture;
 
-  const VideoPlayerWidget({Key? key, required this.url}) : super(key: key);
-
-  @override
-  State<StatefulWidget> createState() {
-    return VideoPlayerWidgetState(url: url);
-  }
-}
-
-class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
-  final String url;
-  final Completer<WebViewController> _controller = Completer<WebViewController>();
-  String? _videoUrl;
-
-  VideoPlayerWidgetState({required this.url});
-
-  @override
-  void initState() {
-    super.initState();
-    if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
-  }
+  const VideoPlayerWidget({Key? key, required this.controllerFuture, required this.url}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return buildWebPlayer();
-  }
-
-  buildWebPlayer() {
     return Column(
       children: [
         Container(
@@ -47,60 +25,13 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
             initialUrl: url,
             javascriptMode: JavascriptMode.unrestricted,
             allowsInlineMediaPlayback: true,
-            onWebViewCreated: (WebViewController webViewController) {
-              _controller.complete(webViewController);
-            },
-            onPageFinished: (url) {
-              findVideoUrl();
+            onWebViewCreated: (controller) {
+              controllerFuture.complete(controller);
             },
           ),
           height: 250,
         ),
-        Container(
-          decoration: BoxDecoration(color: Colors.white),
-          padding: const EdgeInsets.all(8),
-          child: Flex(
-            direction: Axis.horizontal,
-            children: buildCopyVideoUrl(),
-          ),
-        ),
       ],
     );
-  }
-
-  /// 复制视频链接
-  List<Widget> buildCopyVideoUrl() {
-    var widgets = [
-      Text("视频链接:"),
-      Expanded(
-        child: InkWell(
-          child: Text(
-            _videoUrl == null ? "获取中" : "获取成功(点击复制)",
-            style: TextStyle(color: _videoUrl == null ? Colors.grey : Colors.green),
-          ),
-          onTap: () async {
-            if (_videoUrl == null) {
-              return;
-            }
-            await Clipboard.setData(ClipboardData(text: _videoUrl));
-            Fluttertoast.showToast(msg: "复制成功", gravity: ToastGravity.CENTER);
-          },
-        ),
-      ),
-    ];
-    return widgets;
-  }
-
-  /// 查找视频链接
-  void findVideoUrl() async {
-    var controller = await _controller.future;
-    var javascriptString = "document.querySelector('video')&&document.querySelector('video').src";
-    var data = await controller.evaluateJavascript(javascriptString);
-    if (data.contains("null")) {
-      return;
-    }
-    setState(() {
-      _videoUrl = data;
-    });
   }
 }
