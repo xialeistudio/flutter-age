@@ -48,7 +48,7 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context, title: "首页"),
+      appBar: buildMainAppBar(context, title: "首页"),
       body: RefreshIndicator(
         child: CustomScrollView(
           physics: BouncingScrollPhysics(),

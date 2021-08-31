@@ -30,7 +30,7 @@ class RecommendPageState extends State<RecommendPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context, title: "每日推荐"),
+      appBar: buildMainAppBar(context, title: "每日推荐"),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () => onRefresh(cached: false),

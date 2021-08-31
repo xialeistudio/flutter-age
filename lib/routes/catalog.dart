@@ -57,7 +57,7 @@ class CatalogPageState extends State<CatalogPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context, title: "全部动漫"),
+      appBar: buildMainAppBar(context, title: "全部动漫"),
       body: filterData == null ? Center(child: CircularProgressIndicator()) : buildListView(),
     );
   }

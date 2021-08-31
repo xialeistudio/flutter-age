@@ -1,4 +1,3 @@
-import 'package:age/lib/http/client.dart';
 import 'package:age/lib/model/slide.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

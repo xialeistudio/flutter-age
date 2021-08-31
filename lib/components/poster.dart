@@ -1,4 +1,4 @@
-import 'package:age/lib/global.dart';
+import 'package:age/lib/extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -14,7 +14,7 @@ class Poster extends StatelessWidget {
     return Stack(
       alignment: AlignmentDirectional.topCenter,
       children: [
-        Image.network(Util.adaptImageURL(image), fit: BoxFit.fitWidth, scale: scale),
+        Image.network(image.asUrl(), fit: BoxFit.fitWidth, scale: scale),
         // 小标题
         Positioned(
           right: 4,

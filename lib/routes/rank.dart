@@ -28,7 +28,7 @@ class RankPageState extends State<RankPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildAppBar(context, title: "排行榜"),
+      appBar: buildMainAppBar(context, title: "排行榜"),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () => onRefresh(cached: false),

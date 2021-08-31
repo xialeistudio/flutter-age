@@ -3,7 +3,7 @@ import 'dart:ui';
 
 import 'package:age/components/poster.dart';
 import 'package:age/lib/model/album_info.dart';
-import 'package:age/lib/global.dart';
+import 'package:age/lib/extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +17,7 @@ class DetailAnimationInfo extends StatelessWidget {
     return Column(children: [
       Container(
         decoration: BoxDecoration(
-          image: DecorationImage(image: NetworkImage(Util.adaptImageURL(info.cover!)), fit: BoxFit.fill),
+          image: DecorationImage(image: NetworkImage(info.cover!.asUrl()), fit: BoxFit.fill),
         ),
         child: ClipRect(
           child: BackdropFilter(
