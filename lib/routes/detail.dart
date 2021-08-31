@@ -8,7 +8,6 @@ import 'package:age/lib/http/client.dart';
 import 'package:age/lib/model/album_info.dart';
 import 'package:age/lib/model/list_item.dart';
 import 'package:age/lib/model/video_info.dart';
-import 'package:age/lib/model/video_play_config.dart';
 import 'package:age/routes/components/playlist.dart';
 import 'package:age/routes/detail_playlist.dart';
 import 'package:dio/dio.dart';

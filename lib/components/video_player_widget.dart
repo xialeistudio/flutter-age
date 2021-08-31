@@ -1,11 +1,6 @@
 import 'dart:async';
-import 'dart:io';
-
-import 'package:age/lib/model/video_play_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 /// 播放器
