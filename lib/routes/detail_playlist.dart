@@ -13,12 +13,14 @@ class DetailPlaylistPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text("播放列表")),
       body: SafeArea(
         child: DefaultTabController(
           length: playlists.length,
           child: CustomScrollView(
+            physics: NeverScrollableScrollPhysics(),
             slivers: [
-              SliverAppBar(title: PlaylistsBar(playlists: playlists)),
+              SliverToBoxAdapter(child: PlaylistsBar(playlists: playlists)),
               SliverFillRemaining(child: TabBarView(children: playlists.map((e) => buildPlaylistItem(e)).toList())),
             ],
           ),

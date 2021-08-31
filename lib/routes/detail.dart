@@ -144,12 +144,9 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
         onPressed: () async {
           var selected = await Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) {
-                return DetailPlaylistPage(playlists: playlists, defaultSelected: playingVideo.value);
-              },
-              fullscreenDialog: true,
-            ),
+            MaterialPageRoute(builder: (context) {
+              return DetailPlaylistPage(playlists: playlists, defaultSelected: playingVideo.value);
+            }),
           );
           if (selected == null) {
             return;
