@@ -60,6 +60,7 @@ class RankPageState extends State<RankPage> {
           }
           return Container(
             child: ListTile(
+              onTap: () => Navigator.pushNamed(context, "/detail", arguments: {'id': item.aid, 'title': item.title}),
               leading: Container(
                 width: 32,
                 height: 26,

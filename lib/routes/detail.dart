@@ -32,7 +32,7 @@ class DetailPage extends StatefulWidget {
 class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   final String id;
   final String title;
-  WebViewController? _webViewController;
+  Completer<WebViewController> webviewControllerFuture = Completer();
 
   // 页面数据
   AnimationInfo? _animationInfo;
@@ -81,7 +81,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
 
   /// 停止webview
   Future<bool> stopWebview() async {
-    _webViewController?.loadUrl("about:blank");
+    webviewControllerFuture.future.then((value) => value.loadUrl("about:blank"));
     return true;
   }
 
@@ -90,35 +90,32 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
     var playlists = animationInfo.playlists!.where((element) => element.length > 0).toList();
     return DefaultTabController(
       length: playlists.length,
-      child: RefreshIndicator(
-        child: CustomScrollView(
-          physics: BouncingScrollPhysics(),
-          slivers: [
-            SliverToBoxAdapter(
-              child: ValueListenableBuilder(
-                builder: (context, String value, child) {
-                  if (value == "") {
-                    return DetailAnimationInfo(info: animationInfo);
-                  }
-                  return VideoPlayerWidget(url: value, onWebviewCreated: (controller) => _webViewController = controller);
-                },
-                valueListenable: playingVideoUrl,
-              ),
+      child: CustomScrollView(
+        physics: BouncingScrollPhysics(),
+        slivers: [
+          SliverToBoxAdapter(
+            child: ValueListenableBuilder(
+              builder: (context, String value, child) {
+                if (value == "") {
+                  return DetailAnimationInfo(info: animationInfo);
+                }
+                return VideoPlayerWidget(url: value, controllerFuture: webviewControllerFuture);
+              },
+              valueListenable: playingVideoUrl,
             ),
-            SliverToBoxAdapter(child: buildDescription(animationInfo)),
-            SliverPadding(padding: const EdgeInsets.only(top: 8)),
-            SliverToBoxAdapter(child: buildPlaylistHeader(playlists)),
-            SliverToBoxAdapter(child: buildPlaylistBody(playlists)),
-            SliverPadding(padding: const EdgeInsets.only(top: 8)),
-            SliverToBoxAdapter(child: TitleBar(title: "相关动画")),
-            buildRelationList(relationList),
-            SliverPadding(padding: const EdgeInsets.only(top: 8)),
-            SliverToBoxAdapter(child: TitleBar(title: "猜你喜欢")),
-            ItemGridSliver(items: recommendList),
-            SliverPadding(padding: const EdgeInsets.only(bottom: 20)),
-          ],
-        ),
-        onRefresh: () => loadData(cached: false),
+          ),
+          SliverToBoxAdapter(child: buildDescription(animationInfo)),
+          SliverPadding(padding: const EdgeInsets.only(top: 8)),
+          SliverToBoxAdapter(child: buildPlaylistHeader(playlists)),
+          SliverToBoxAdapter(child: buildPlaylistBody(playlists)),
+          SliverPadding(padding: const EdgeInsets.only(top: 8)),
+          SliverToBoxAdapter(child: TitleBar(title: "相关动画")),
+          buildRelationList(relationList),
+          SliverPadding(padding: const EdgeInsets.only(top: 8)),
+          SliverToBoxAdapter(child: TitleBar(title: "猜你喜欢")),
+          ItemGridSliver(items: recommendList),
+          SliverPadding(padding: const EdgeInsets.only(bottom: 20)),
+        ],
       ),
     );
   }
@@ -154,11 +151,9 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
         onPressed: () async {
           var selected = await Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (context) {
-                  return DetailPlaylistPage(playlists: playlists, defaultSelected: playingVideo.value);
-                },
-                fullscreenDialog: true),
+            MaterialPageRoute(builder: (context) {
+              return DetailPlaylistPage(playlists: playlists, defaultSelected: playingVideo.value);
+            }),
           );
           if (selected == null) {
             return;
@@ -238,9 +233,19 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
     try {
       var globalConfig = await httpClient.loadGlobalPlayConfig();
       var playConfig = await httpClient.loadVideoPlayConfig(video, globalConfig);
+      if (playConfig.vurl!.contains("404.mp4")) {
+        Fluttertoast.showToast(msg: "播放失败: 404", gravity: ToastGravity.CENTER);
+        return;
+      }
       playingVideoUrl.value = playConfig.purlf! + playConfig.vurl!;
       playingVideo.value = video;
-      _webViewController?.loadUrl(playingVideoUrl.value);
+      var controller = await webviewControllerFuture.future;
+      controller.loadUrl(playingVideoUrl.value, headers: {
+        'Referrer': 'https://web.age-spa.com:8443/',
+        'Sec-Fetch-Dest': 'iframe',
+        'Sec-Fetch-Site': 'cross-site',
+        'Sec-Fetch-Mode': 'navigate'
+      });
     } on DioError catch (err) {
       Fluttertoast.showToast(msg: "播放失败:${err.message}", gravity: ToastGravity.CENTER);
     } finally {
