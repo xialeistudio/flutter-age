@@ -48,13 +48,11 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: InkWell(
+          child: Icon(Icons.search),
+          onTap: () => showSearch(context: context, delegate: SearchBarDelegate()),
+        ),
         title: Text('首页'),
-        actions: [
-          InkWell(
-            child: Icon(Icons.search),
-            onTap: () => showSearch(context: context, delegate: SearchBarDelegate()),
-          )
-        ],
       ),
       body: RefreshIndicator(
         child: CustomScrollView(

@@ -144,32 +144,33 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
     return Container(
       decoration: BoxDecoration(color: Colors.white),
       padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 10,
-        children: videos.map((e) {
+      child: ListView.builder(
+        itemBuilder: (context, index) {
+          var item = videos[index];
           return InkWell(
             child: ValueListenableBuilder(
               builder: (context, String value, child) {
                 var borderColor = Color.fromRGBO(200, 200, 200, 1);
                 var textColor = Colors.black;
-                if (value == e.playVid) {
+                if (value == item.playVid) {
                   borderColor = Colors.orange;
                   textColor = borderColor;
                 }
                 return Container(
-                  child: Text(e.title!, style: TextStyle(fontSize: 14, color: textColor)),
-                  width: MediaQuery.of(context).size.width * 0.3,
-                  height: 30,
+                  child: Text(item.title!, style: TextStyle(fontSize: 14, color: textColor)),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  margin: const EdgeInsets.only(right: 8),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(border: Border.all(width: 0.5, color: borderColor)),
                 );
               },
               valueListenable: playingVideoVid,
             ),
-            onTap: () => playVideo(e),
+            onTap: () => playVideo(item),
           );
-        }).toList(),
+        },
+        itemCount: videos.length,
+        scrollDirection: Axis.horizontal,
       ),
     );
   }
@@ -177,7 +178,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   /// 构造播放列表indexedStack
   buildPlaylistBody(List<List<VideoInfo>> list, TabController controller) {
     return Container(
-      height: 200,
+      height: 40,
       child: TabBarView(
         children: list.map((e) => buildPlaylistItem(e)).toList(),
         controller: controller,

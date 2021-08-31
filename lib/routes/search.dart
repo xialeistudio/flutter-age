@@ -54,7 +54,7 @@ class SearchBarDelegate extends SearchDelegate<String> {
               ),
             );
           }
-          return buildSearchList(snapshot.data!);
+          return SafeArea(child: buildSearchList(snapshot.data!));
         }
         return Center(
           child: CircularProgressIndicator(),
@@ -90,7 +90,7 @@ class SearchBarDelegate extends SearchDelegate<String> {
             (context, index) {
               return ListDetailItemWidget(item: list[index]);
             },
-            childCount: count,
+            childCount: list.length,
           ),
         ),
       ],
