@@ -7,6 +7,7 @@ import 'package:age/lib/model/album_info.dart';
 import 'package:age/lib/model/list_item.dart';
 import 'package:age/lib/model/video_info.dart';
 import 'package:age/lib/model/video_play_config.dart';
+import 'package:age/routes/components/playlist.dart';
 import 'package:age/routes/detail_playlist.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -74,38 +75,41 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   }
 
   /// 构造正文
-  RefreshIndicator buildBody(AnimationInfo animationInfo, List<ListItem> relationList, recommendList) {
+  Widget buildBody(AnimationInfo animationInfo, List<ListItem> relationList, recommendList) {
     var playlists = animationInfo.playlists!.where((element) => element.length > 0).toList();
     var controller = TabController(length: playlists.length, vsync: this);
-    return RefreshIndicator(
-      child: CustomScrollView(
-        physics: BouncingScrollPhysics(),
-        slivers: [
-          SliverToBoxAdapter(
-            child: ValueListenableBuilder(
-              builder: (context, String value, child) {
-                if (value == "") {
-                  return DetailAnimationInfo(info: animationInfo);
-                }
-                return VideoPlayerWidget(url: value);
-              },
-              valueListenable: playingVideoUrl,
+    return DefaultTabController(
+      length: playlists.length,
+      child: RefreshIndicator(
+        child: CustomScrollView(
+          physics: BouncingScrollPhysics(),
+          slivers: [
+            SliverToBoxAdapter(
+              child: ValueListenableBuilder(
+                builder: (context, String value, child) {
+                  if (value == "") {
+                    return DetailAnimationInfo(info: animationInfo);
+                  }
+                  return VideoPlayerWidget(url: value);
+                },
+                valueListenable: playingVideoUrl,
+              ),
             ),
-          ),
-          SliverToBoxAdapter(child: buildDescription(animationInfo)),
-          SliverPadding(padding: const EdgeInsets.only(top: 8)),
-          SliverToBoxAdapter(child: buildPlaylistHeader(playlists, controller)),
-          SliverToBoxAdapter(child: buildPlaylistBody(playlists, controller)),
-          SliverPadding(padding: const EdgeInsets.only(top: 8)),
-          SliverToBoxAdapter(child: TitleBar(title: "相关动画")),
-          buildRelationList(relationList),
-          SliverPadding(padding: const EdgeInsets.only(top: 8)),
-          SliverToBoxAdapter(child: TitleBar(title: "猜你喜欢")),
-          ItemGridSliver(items: recommendList),
-          SliverPadding(padding: const EdgeInsets.only(bottom: 20)),
-        ],
+            SliverToBoxAdapter(child: buildDescription(animationInfo)),
+            SliverPadding(padding: const EdgeInsets.only(top: 8)),
+            SliverToBoxAdapter(child: buildPlaylistHeader(playlists)),
+            SliverToBoxAdapter(child: buildPlaylistBody(playlists)),
+            SliverPadding(padding: const EdgeInsets.only(top: 8)),
+            SliverToBoxAdapter(child: TitleBar(title: "相关动画")),
+            buildRelationList(relationList),
+            SliverPadding(padding: const EdgeInsets.only(top: 8)),
+            SliverToBoxAdapter(child: TitleBar(title: "猜你喜欢")),
+            ItemGridSliver(items: recommendList),
+            SliverPadding(padding: const EdgeInsets.only(bottom: 20)),
+          ],
+        ),
+        onRefresh: () => loadData(cached: false),
       ),
-      onRefresh: () => loadData(cached: false),
     );
   }
 
@@ -133,41 +137,27 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   }
 
   /// 构造播放列表Tab
-  buildPlaylistHeader(List<List<VideoInfo>> playlists, TabController controller) {
-    return Container(
-      decoration: BoxDecoration(color: Colors.white),
-      child: Flex(
-        direction: Axis.horizontal,
-        children: [
-          Expanded(
-            child: TabBar(
-              controller: controller,
-              indicatorColor: Colors.orange,
-              labelColor: Colors.orange,
-              unselectedLabelColor: Colors.black,
-              tabs: playlists.asMap().entries.map((entry) => Tab(text: "播放列表${entry.key + 1}")).toList(),
-            ),
-          ),
-          IconButton(
-              onPressed: () async {
-                var selected = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return DetailPlaylistPage(playlists: playlists);
-                    },
-                    fullscreenDialog: true,
-                  ),
-                );
-                if (selected == null) {
-                  return;
-                }
-                playVideo(selected);
+  buildPlaylistHeader(List<List<VideoInfo>> playlists) {
+    return PlaylistsBar(
+      playlists: playlists,
+      trailing: IconButton(
+        onPressed: () async {
+          var selected = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) {
+                return DetailPlaylistPage(playlists: playlists, defaultSelected: playingVideo.value);
               },
-              icon: Icon(Icons.arrow_forward_ios),
-              iconSize: 18,
-              enableFeedback: false)
-        ],
+              fullscreenDialog: true,
+            ),
+          );
+          if (selected == null) {
+            return;
+          }
+          playVideo(selected);
+        },
+        icon: Icon(Icons.arrow_forward_ios),
+        iconSize: 18,
       ),
     );
   }
@@ -176,28 +166,19 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   Container buildPlaylistItem(List<VideoInfo> videos) {
     return Container(
       decoration: BoxDecoration(color: Colors.white),
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: ListView.builder(
         itemBuilder: (context, index) {
           var item = videos[index];
           return InkWell(
-            child: ValueListenableBuilder(
-              builder: (context, VideoInfo value, child) {
-                var borderColor = Color.fromRGBO(200, 200, 200, 1);
-                var textColor = Colors.black;
-                if (value.playVid == item.playVid) {
-                  borderColor = Colors.orange;
-                  textColor = borderColor;
-                }
-                return Container(
-                  child: Text(item.title!, style: TextStyle(fontSize: 14, color: textColor)),
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  margin: const EdgeInsets.only(right: 8),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(border: Border.all(width: 0.5, color: borderColor)),
-                );
-              },
-              valueListenable: playingVideo,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: ValueListenableBuilder(
+                builder: (context, VideoInfo value, child) {
+                  return PlaylistItem(video: item, active: value.playVid == item.playVid);
+                },
+                valueListenable: playingVideo,
+              ),
             ),
             onTap: () => playVideo(item),
           );
@@ -208,13 +189,12 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
     );
   }
 
-  /// 构造播放列表indexedStack
-  buildPlaylistBody(List<List<VideoInfo>> list, TabController controller) {
+  /// 构造播放列表
+  buildPlaylistBody(List<List<VideoInfo>> list) {
     return Container(
       height: 40,
       child: TabBarView(
         children: list.map((e) => buildPlaylistItem(e)).toList(),
-        controller: controller,
       ),
     );
   }
