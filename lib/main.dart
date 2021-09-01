@@ -16,7 +16,7 @@ void main() {
     theme: ThemeData(
       primaryColor: Colors.white,
       scaffoldBackgroundColor: Colors.white,
-      fontFamily: "Operator Mono",
+      fontFamily: "FangZhengLanTingXiHei",
     ),
     routes: {
       '/detail': (context) {

@@ -19,7 +19,7 @@ class Swipe extends StatelessWidget {
         autoplay: items.length > 0,
         itemCount: items.length,
         pagination: SwiperPagination(
-          builder: SwiperPagination.dots,
+          builder: DotSwiperPaginationBuilder(size: 6, activeSize: 6, activeColor: Colors.orange),
           margin: EdgeInsets.only(bottom: 0),
         ),
         itemBuilder: (context, index) {
@@ -53,7 +53,7 @@ class SwipeItem extends StatelessWidget {
               style: TextStyle(fontSize: 16, color: Colors.white),
               textAlign: TextAlign.center,
             ),
-            padding: const EdgeInsets.symmetric(vertical: 15),
+            padding: const EdgeInsets.symmetric(vertical: 10),
             decoration: BoxDecoration(color: Color.fromRGBO(64, 64, 64, .5)),
             width: screenWidth,
           )

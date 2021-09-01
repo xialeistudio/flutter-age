@@ -85,3 +85,6 @@ flutter:
     - family: Operator Mono
       fonts:
         - asset: assets/fonts/OperatorMono-Book.otf
+    - family: FangZhengLanTingXiHei
+      fonts:
+        - asset: assets/fonts/fzltxh.ttf
