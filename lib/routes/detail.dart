@@ -5,7 +5,7 @@ import 'package:age/components/detail_animation_info.dart';
 import 'package:age/components/item_grid_sliver.dart';
 import 'package:age/components/title_bar.dart';
 import 'package:age/components/video_player_widget.dart';
-import 'package:age/lib/history_manager.dart';
+import 'package:age/lib/data_manager.dart';
 import 'package:age/lib/http/client.dart';
 import 'package:age/lib/model/album_info.dart';
 import 'package:age/lib/model/list_item.dart';
@@ -44,6 +44,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   // 播放相关
   ValueNotifier<String> playingVideoUrl = ValueNotifier("");
   ValueNotifier<VideoInfo> playingVideo = ValueNotifier(VideoInfo());
+  ValueNotifier<bool> favorite = ValueNotifier(false);
   bool isLoading = false;
 
   DetailPageState({required this.id, required this.title});
@@ -76,9 +77,41 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
           ),
         ),
         body: SafeArea(child: child),
+        floatingActionButton: _animationInfo == null
+            ? null
+            : ValueListenableBuilder(
+                builder: (context, bool value, child) {
+                  return FloatingActionButton(
+                    child: Icon(Icons.favorite),
+                    backgroundColor: value ? Colors.green : Colors.orange,
+                    onPressed: () {
+                      handleFavorite(value);
+                    },
+                  );
+                },
+                valueListenable: favorite,
+              ),
       ),
       onWillPop: stopWebview,
     );
+  }
+
+  void handleFavorite(bool value) {
+    var listItem = ListItem(
+      aid: _animationInfo!.aid,
+      title: _animationInfo!.title,
+      newTitle: _animationInfo!.newTitle,
+      picSmall: _animationInfo!.coverSmall,
+    );
+    if (value) {
+      favoriteManager.remove(listItem);
+      Fluttertoast.showToast(msg: "取消收藏成功", gravity: ToastGravity.CENTER);
+      favorite.value = false;
+    } else {
+      favoriteManager.add(listItem);
+      Fluttertoast.showToast(msg: "收藏成功", gravity: ToastGravity.CENTER);
+      favorite.value = true;
+    }
   }
 
   /// 停止webview
@@ -142,14 +175,14 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
       _recommendList = data[2]! as List<ListItem>;
       _animationInfo = animationInfo;
     });
-    historyManager.add(
-      ListItem(
-        aid: animationInfo.aid,
-        title: animationInfo.title,
-        newTitle: animationInfo.newTitle,
-        picSmall: animationInfo.coverSmall,
-      ),
+    var listItem = ListItem(
+      aid: animationInfo.aid,
+      title: animationInfo.title,
+      newTitle: animationInfo.newTitle,
+      picSmall: animationInfo.coverSmall,
     );
+    await historyManager.add(listItem);
+    favorite.value = await favoriteManager.exists(listItem);
   }
 
   /// 构造播放列表Tab

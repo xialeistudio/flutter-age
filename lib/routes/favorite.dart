@@ -6,14 +6,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class HistoryPage extends StatefulWidget {
+class FavoritePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return HistoryPageState();
+    return FavoritePageState();
   }
 }
 
-class HistoryPageState extends State<HistoryPage> {
+class FavoritePageState extends State<FavoritePage> {
   List<ListItem> list = [];
 
   @override
@@ -26,7 +26,7 @@ class HistoryPageState extends State<HistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('历史记录'),
+        title: Text('我的收藏'),
       ),
       body: SafeArea(
         child: RefreshIndicator(
@@ -35,8 +35,8 @@ class HistoryPageState extends State<HistoryPage> {
             slivers: [
               SliverToBoxAdapter(
                 child: TitleBar(
-                  title: "历史记录",
-                  iconData: Icons.history,
+                  title: "我的收藏",
+                  iconData: Icons.favorite,
                   trailing: InkWell(child: Text("清空", style: TextStyle(color: Colors.orange)), onTap: () => confirmClear(context)),
                 ),
               ),
@@ -49,7 +49,7 @@ class HistoryPageState extends State<HistoryPage> {
   }
 
   Future<void> loadData() async {
-    var list = await historyManager.load();
+    var list = await favoriteManager.load();
     setState(() {
       this.list = list;
     });
@@ -82,7 +82,7 @@ class HistoryPageState extends State<HistoryPage> {
     if (!result) {
       return;
     }
-    await historyManager.clear();
+    await favoriteManager.clear();
     Fluttertoast.showToast(msg: "清空完成", gravity: ToastGravity.CENTER);
     setState(() {
       list = [];

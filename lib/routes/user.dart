@@ -1,7 +1,7 @@
 import 'package:age/components/item_grid_sliver.dart';
 import 'package:age/components/title_bar.dart';
 import 'package:age/lib/global.dart';
-import 'package:age/lib/history_manager.dart';
+import 'package:age/lib/data_manager.dart';
 import 'package:age/lib/model/list_item.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +14,7 @@ class UserPage extends StatefulWidget {
 
 class UserPageState extends State<UserPage> {
   List<ListItem> historyList = [];
+  List<ListItem> favoriteList = [];
 
   @override
   void initState() {
@@ -22,9 +23,10 @@ class UserPageState extends State<UserPage> {
   }
 
   Future<void> loadData() async {
-    var history = await historyManager.load();
+    var data = await Future.wait([historyManager.load(), favoriteManager.load()]);
     setState(() {
-      historyList = history;
+      historyList = data[0];
+      favoriteList = data[1];
     });
   }
 
@@ -33,46 +35,68 @@ class UserPageState extends State<UserPage> {
     return Scaffold(
       appBar: AppBar(title: Text("我的")),
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(child: buildHistoryTitleBar(context)),
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              sliver: SliverToBoxAdapter(
-                child: Container(
-                  height: 200,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        margin: const EdgeInsets.only(right: 10),
-                        child: ListItemWidget(item: historyList[index]),
-                      );
-                    },
-                    itemCount: historyList.length,
-                    itemExtent: 126,
-                  ),
-                ),
-              ),
-            )
-          ],
+        child: RefreshIndicator(
+          onRefresh: loadData,
+          child: CustomScrollView(
+            slivers: [
+              buildTitleBarSliver(context, "历史记录", Icons.history, () => Navigator.pushNamed(context, "/history")),
+              buildDataListSliver(historyList),
+              buildTitleBarSliver(context, "收藏列表", Icons.favorite, () => Navigator.pushNamed(context, "/favorite")),
+              buildDataListSliver(favoriteList),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  TitleBar buildHistoryTitleBar(BuildContext context) {
-    return TitleBar(
-      title: "历史记录",
-      iconData: Icons.history,
-      trailing: SizedBox(
-        width: 24,
-        height: 24,
-        child: IconButton(
-          onPressed: () => Navigator.pushNamed(context, "/history"),
-          icon: Icon(Icons.arrow_forward_ios),
-          iconSize: 18,
-          padding: const EdgeInsets.all(0),
+  /// 构造数据列表
+  Widget buildDataListSliver(List<ListItem> list) {
+    if (list.isEmpty) {
+      return SliverToBoxAdapter(
+        child: Container(
+          height: 100,
+          child: Text("暂无数据"),
+          alignment: Alignment.center,
+        ),
+      );
+    }
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      sliver: SliverToBoxAdapter(
+        child: Container(
+          height: 200,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              return Container(
+                margin: const EdgeInsets.only(right: 10),
+                child: ListItemWidget(item: list[index]),
+              );
+            },
+            itemCount: list.length,
+            itemExtent: 126,
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// 构造标题栏
+  Widget buildTitleBarSliver(BuildContext context, String title, IconData icon, VoidCallback onPressed) {
+    return SliverToBoxAdapter(
+      child: TitleBar(
+        title: title,
+        iconData: icon,
+        trailing: SizedBox(
+          width: 24,
+          height: 24,
+          child: IconButton(
+            onPressed: onPressed,
+            icon: Icon(Icons.arrow_forward_ios),
+            iconSize: 18,
+            padding: const EdgeInsets.all(0),
+          ),
         ),
       ),
     );

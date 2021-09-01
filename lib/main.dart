@@ -1,5 +1,6 @@
 import 'package:age/routes/catalog.dart';
 import 'package:age/routes/detail.dart';
+import 'package:age/routes/favorite.dart';
 import 'package:age/routes/history.dart';
 import 'package:age/routes/home.dart';
 import 'package:age/routes/rank.dart';
@@ -23,6 +24,7 @@ void main() {
         return DetailPage(id: params["id"]!, title: params["title"]!);
       },
       '/history': (context) => HistoryPage(),
+      '/favorite': (context) => FavoritePage(),
       '/recommend': (context) => RecommendPage(),
       '/update': (context) => UpdatePage(),
     },
@@ -44,12 +46,7 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     return Scaffold(
       body: IndexedStack(
         index: _pageIndex,
-        children: [
-          HomePage(),
-          CatalogPage(),
-          RankPage(),
-          UserPage()
-        ],
+        children: [HomePage(), CatalogPage(), RankPage(), UserPage()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
