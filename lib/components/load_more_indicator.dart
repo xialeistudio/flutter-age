@@ -24,15 +24,22 @@ class LoadMoreIndicator extends StatefulWidget {
 typedef LoadMoreCallback = Future<void> Function();
 
 class _LoadMoreIndicatorState extends State<LoadMoreIndicator> {
-  bool _loading = false;
+  ValueNotifier<bool> _loading = ValueNotifier(false);
 
   @override
   Widget build(BuildContext context) {
     var scrollView = widget.child;
     scrollView.slivers.add(
       SliverPadding(
-        padding: const EdgeInsets.only(bottom: 20),
-        sliver: SliverToBoxAdapter(child: _LoadMoreIndicatorBar(loading: _loading, hasMore: widget.hasMore)),
+        padding: const EdgeInsets.only(bottom: 40),
+        sliver: SliverToBoxAdapter(
+          child: ValueListenableBuilder(
+            valueListenable: _loading,
+            builder: (context, bool value, child) {
+              return _LoadMoreIndicatorBar(loading: value, hasMore: widget.hasMore);
+            },
+          ),
+        ),
       ),
     );
     final Widget child = NotificationListener<ScrollNotification>(
@@ -49,7 +56,7 @@ class _LoadMoreIndicatorState extends State<LoadMoreIndicator> {
     if (notification.metrics.pixels != notification.metrics.maxScrollExtent) {
       return false;
     }
-    if (!widget.hasMore || _loading) {
+    if (!widget.hasMore || _loading.value) {
       return true;
     }
     loadData();
@@ -58,18 +65,11 @@ class _LoadMoreIndicatorState extends State<LoadMoreIndicator> {
 
   /// 加载数据
   Future<void> loadData() async {
-    setState(() {
-      _loading = true;
-    });
+    _loading.value = true;
     try {
       await widget.onLoadMore();
-      setState(() {
-        _loading = false;
-      });
-    } catch (_) {
-      setState(() {
-        _loading = false;
-      });
+    } finally {
+      _loading.value = false;
     }
   }
 }
@@ -86,7 +86,7 @@ class _LoadMoreIndicatorBar extends StatelessWidget {
     if (loading) {
       return Container(
         alignment: Alignment.center,
-        child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator()),
+        child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
         padding: const EdgeInsets.symmetric(vertical: 4),
       );
     }

@@ -112,8 +112,12 @@ class HttpClient {
   }
 
   /// 加载列表
-  Future<Tuple<Map<String, List<String>>, List<ListDetailItem>, int>> loadList(
-      {int page = 1, int size = 10, Map<String, String>? query, cached = true}) async {
+  Future<Tuple<Map<String, List<String>>, List<ListDetailItem>, int>> loadList({
+    int page = 1,
+    int size = 10,
+    Map<String, String>? query,
+    cached = true,
+  }) async {
     query = query ?? {};
     query['page'] = page.toString();
     query['size'] = size.toString();

@@ -16,6 +16,7 @@ class Swipe extends StatelessWidget {
     return Container(
       height: MediaQuery.of(context).size.width * 0.53,
       child: Swiper(
+        autoplay: items.length > 0,
         itemCount: items.length,
         pagination: SwiperPagination(
           builder: SwiperPagination.dots,
