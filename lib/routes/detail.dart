@@ -223,8 +223,10 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
           var item = relationList[index];
           return BorderContainer(
             child: ListTile(
-              title: Text(item.title!),
+              visualDensity: VisualDensity(vertical: -4),
+              title: Text(item.title!, style: TextStyle(fontSize: 14)),
               tileColor: Colors.white,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 10),
               trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black),
               onTap: () => Navigator.pushNamed(context, "/detail", arguments: {'id': item.aid, 'title': item.title}),
             ),

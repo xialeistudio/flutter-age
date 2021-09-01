@@ -18,6 +18,7 @@ class DetailAnimationInfo extends StatelessWidget {
       Container(
         decoration: BoxDecoration(
           image: DecorationImage(image: NetworkImage(info.cover!.asUrl()), fit: BoxFit.fill),
+          color: Colors.black54
         ),
         child: ClipRect(
           child: BackdropFilter(

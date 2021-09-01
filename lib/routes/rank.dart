@@ -66,13 +66,15 @@ class RankPageState extends State<RankPage> {
               onTap: () => Navigator.pushNamed(context, "/detail", arguments: {'id': item.aid, 'title': item.title}),
               leading: Container(
                 width: 32,
-                height: 26,
+                height: 32,
                 alignment: Alignment.center,
                 child: Text("${index + 1}", style: TextStyle(color: color)),
-                decoration: BoxDecoration(border: Border.all(color: color)),
+                decoration: BoxDecoration(border: Border.all(color: color), borderRadius: BorderRadius.circular(16)),
               ),
               title: Text(item.title!, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14)),
               trailing: Text("${item.cCnt}"),
+              visualDensity: VisualDensity(vertical: -4),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 10),
             ),
             decoration: BoxDecoration(
                 color: Colors.white,
