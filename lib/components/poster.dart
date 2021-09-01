@@ -15,9 +15,12 @@ class Poster extends StatelessWidget {
     return Stack(
       alignment: AlignmentDirectional.topCenter,
       children: [
-        Image(
-          image: CachedNetworkImageProvider(image.asUrl(), scale: scale),
-          fit: BoxFit.fitWidth,
+        ClipRRect(
+          child: Image(
+            image: CachedNetworkImageProvider(image.asUrl(), scale: scale),
+            fit: BoxFit.fitWidth,
+          ),
+          borderRadius: BorderRadius.circular(4),
         ),
         // 小标题
         Positioned(

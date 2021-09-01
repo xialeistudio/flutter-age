@@ -19,7 +19,7 @@ class UpdatePageState extends State<UpdatePage> {
   int count = 0;
   int page = 1;
   bool hasMore = true;
-  final int size = 12;
+  final int size = 30;
 
   @override
   void initState() {

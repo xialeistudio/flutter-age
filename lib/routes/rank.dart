@@ -1,3 +1,4 @@
+import 'package:age/components/border_container.dart';
 import 'package:age/components/title_bar.dart';
 import 'package:age/lib/global.dart';
 import 'package:age/lib/http/client.dart';
@@ -35,7 +36,6 @@ class RankPageState extends State<RankPage> {
           child: CustomScrollView(
             slivers: [
               buildOptionsSliver(),
-              SliverPadding(padding: const EdgeInsets.only(top: 10)),
               SliverToBoxAdapter(
                 child: TitleBar(
                   title: "排行榜",
@@ -104,40 +104,42 @@ class RankPageState extends State<RankPage> {
 
   buildOptionsSliver() {
     return SliverToBoxAdapter(
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(color: Colors.white),
-        height: 50,
-        child: Flex(
-          direction: Axis.horizontal,
-          children: [
-            SizedBox(
-              width: 56,
-              child: Text("首播年份", style: TextStyle(color: Colors.black), textAlign: TextAlign.right),
-            ),
-            SizedBox(width: 5),
-            Expanded(
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index) {
-                  var textColor = Colors.black;
-                  var option = years[index];
-                  if (year == option) {
-                    textColor = Colors.orange;
-                  }
-                  return InkWell(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
-                      alignment: Alignment.center,
-                      child: Text((option == 0 ? '全部' : option).toString(), textAlign: TextAlign.center, style: TextStyle(color: textColor)),
-                    ),
-                    onTap: () => onChange(option),
-                  );
-                },
-                itemCount: years.length,
+      child: BorderContainer(
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(color: Colors.white),
+          height: 50,
+          child: Flex(
+            direction: Axis.horizontal,
+            children: [
+              SizedBox(
+                width: 56,
+                child: Text("首播年份", style: TextStyle(color: Colors.black), textAlign: TextAlign.right),
               ),
-            ),
-          ],
+              SizedBox(width: 5),
+              Expanded(
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    var textColor = Colors.black;
+                    var option = years[index];
+                    if (year == option) {
+                      textColor = Colors.orange;
+                    }
+                    return InkWell(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        alignment: Alignment.center,
+                        child: Text((option == 0 ? '全部' : option).toString(), textAlign: TextAlign.center, style: TextStyle(color: textColor)),
+                      ),
+                      onTap: () => onChange(option),
+                    );
+                  },
+                  itemCount: years.length,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

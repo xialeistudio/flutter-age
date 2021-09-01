@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:age/components/border_container.dart';
 import 'package:age/components/detail_animation_info.dart';
 import 'package:age/components/item_grid_sliver.dart';
 import 'package:age/components/title_bar.dart';
@@ -122,16 +123,14 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   }
 
   /// 构造简介
-  Container buildDescription(AnimationInfo animationInfo) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      child: Text(animationInfo.description!),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          top: BorderSide(color: Color.fromRGBO(220, 220, 220, 0.5), width: 1, style: BorderStyle.solid),
-        ),
+  Widget buildDescription(AnimationInfo animationInfo) {
+    return BorderContainer(
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        child: Text(animationInfo.description!),
       ),
+      top: true,
+      bottom: true,
     );
   }
 
@@ -221,18 +220,17 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, index) {
-          if (index.isOdd) {
-            return Divider(color: Color.fromRGBO(220, 220, 220, 0.5), height: 0.5);
-          }
-          var item = relationList[index ~/ 2];
-          return ListTile(
-            title: Text(item.title!),
-            tileColor: Colors.white,
-            trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black),
-            onTap: () => Navigator.pushNamed(context, "/detail", arguments: {'id': item.aid, 'title': item.title}),
+          var item = relationList[index];
+          return BorderContainer(
+            child: ListTile(
+              title: Text(item.title!),
+              tileColor: Colors.white,
+              trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black),
+              onTap: () => Navigator.pushNamed(context, "/detail", arguments: {'id': item.aid, 'title': item.title}),
+            ),
           );
         },
-        childCount: relationList.length * 2 - 1,
+        childCount: relationList.length,
       ),
     );
   }

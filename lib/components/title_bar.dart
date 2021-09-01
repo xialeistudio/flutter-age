@@ -23,12 +23,7 @@ class TitleBar extends StatelessWidget {
       widgets.add(trailing!);
     }
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          bottom: BorderSide(color: Color.fromRGBO(220, 220, 220, 0.5), width: 0.5, style: BorderStyle.solid),
-        ),
-      ),
+      decoration: BoxDecoration(color: Colors.white),
       padding: const EdgeInsets.all(10),
       child: Flex(direction: Axis.horizontal, children: widgets),
     );

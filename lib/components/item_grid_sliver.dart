@@ -12,18 +12,20 @@ class ItemGridSliver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverGrid(
-      delegate: SliverChildBuilderDelegate(
-        (context, index) {
-          return GridItem(item: items[index]);
-        },
-        childCount: items.length,
-      ),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisSpacing: 4,
-        mainAxisSpacing: 4,
-        crossAxisCount: 3,
-        childAspectRatio: 0.62,
+    return SliverPadding(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      sliver: SliverGrid(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            return GridItem(item: items[index]);
+          },
+          childCount: items.length,
+        ),
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          crossAxisSpacing: 8,
+          mainAxisExtent: 200,
+          maxCrossAxisExtent: 126,
+        ),
       ),
     );
   }
@@ -37,22 +39,18 @@ class GridItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      child: Container(
-        decoration: BoxDecoration(color: Colors.white),
-        child: Column(
-          children: [
-            Poster(image: item.picSmall!, title: item.newTitle!),
-            SizedBox(height: 4),
-            // 大标题
-            Text(
-              item.title!,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
+      child: Column(
+        children: [
+          Poster(image: item.picSmall!, title: item.newTitle!),
+          SizedBox(height: 4),
+          // 大标题
+          Text(
+            item.title!,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
       onTap: () => Navigator.pushNamed(context, '/detail', arguments: {'id': item.aid, 'title': item.title}),
     );

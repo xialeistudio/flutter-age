@@ -13,7 +13,7 @@ void main() {
     home: MyApp(),
     theme: ThemeData(
       primaryColor: Colors.white,
-      scaffoldBackgroundColor: Color.fromRGBO(240, 240, 240, 1),
+      scaffoldBackgroundColor: Colors.white,
       fontFamily: "Operator Mono",
     ),
     routes: {
