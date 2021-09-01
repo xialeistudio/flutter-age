@@ -30,7 +30,7 @@ class UpdatePageState extends State<UpdatePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: buildMainAppBar(context, title: "最近更新"),
+      appBar: AppBar(title: Text("最近更新")),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () => onRefresh(cached: false),

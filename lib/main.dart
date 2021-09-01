@@ -21,7 +21,9 @@ void main() {
         var params = ModalRoute.of(context)!.settings.arguments as Map<String, String>;
         return DetailPage(id: params["id"]!, title: params["title"]!);
       },
-      '/history': (context) => HistoryPage()
+      '/history': (context) => HistoryPage(),
+      '/recommend': (context) => RecommendPage(),
+      '/update': (context) => UpdatePage(),
     },
   ));
 }
@@ -44,8 +46,6 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         children: [
           HomePage(),
           CatalogPage(),
-          RecommendPage(),
-          UpdatePage(),
           RankPage(),
         ],
       ),
@@ -53,8 +53,6 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "首页"),
           BottomNavigationBarItem(icon: Icon(Icons.list), label: "列表"),
-          BottomNavigationBarItem(icon: Icon(Icons.recommend), label: "推荐"),
-          BottomNavigationBarItem(icon: Icon(Icons.update), label: "更新"),
           BottomNavigationBarItem(icon: Icon(Icons.timeline), label: "排行"),
         ],
         currentIndex: _pageIndex,
