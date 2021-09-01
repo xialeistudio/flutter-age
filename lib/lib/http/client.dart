@@ -142,11 +142,8 @@ class HttpClient {
   }
 
   /// 推荐
-  Future<Pair<List<ListItem>, int>> loadRecommend({page = 1, size = 10}) async {
-    var response = await _dio.get(
-      '/recommend',
-      queryParameters: {'page': page, 'size': size},
-    );
+  Future<Pair<List<ListItem>, int>> loadRecommend({page = 1, size = 10, cached = true}) async {
+    var response = await _dio.get('/recommend', queryParameters: {'page': page, 'size': size}, options: defaultCacheOptions(cached: cached));
     var data = response.data as Map<String, dynamic>;
     var count = data["AllCnt"]! as int;
     var list = (data["AniPre"]! as List<dynamic>).map((e) => ListItem.fromJson(e)).toList();
@@ -154,11 +151,8 @@ class HttpClient {
   }
 
   /// 最近更新
-  Future<Pair<List<ListItem>, int>> loadUpdate({page = 1, size = 10}) async {
-    var response = await _dio.get(
-      '/update',
-      queryParameters: {'page': page, 'size': size},
-    );
+  Future<Pair<List<ListItem>, int>> loadUpdate({page = 1, size = 10, cached = true}) async {
+    var response = await _dio.get('/update', queryParameters: {'page': page, 'size': size}, options: defaultCacheOptions(cached: cached));
     var data = response.data as Map<String, dynamic>;
     var count = data["AllCnt"]! as int;
     var list = (data["AniPre"]! as List<dynamic>).map((e) => ListItem.fromJson(e)).toList();

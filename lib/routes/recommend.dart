@@ -57,7 +57,7 @@ class RecommendPageState extends State<RecommendPage> {
 
   onRefresh({cached = true}) async {
     page = 1;
-    var data = await httpClient.loadRecommend(page: page, size: size);
+    var data = await httpClient.loadRecommend(page: page, size: size, cached: cached);
     setState(() {
       list = data.first;
       count = data.second;
