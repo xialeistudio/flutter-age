@@ -59,7 +59,7 @@ class HomePageState extends State<HomePage> {
                 child: TitleBar(
                   title: "每日推荐",
                   iconData: Icons.recommend,
-                  trailing: Container(
+                  trailing: SizedBox(
                     width: 24,
                     height: 24,
                     child: IconButton(

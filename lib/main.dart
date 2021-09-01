@@ -5,6 +5,7 @@ import 'package:age/routes/home.dart';
 import 'package:age/routes/rank.dart';
 import 'package:age/routes/recommend.dart';
 import 'package:age/routes/update.dart';
+import 'package:age/routes/user.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -47,6 +48,7 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
           HomePage(),
           CatalogPage(),
           RankPage(),
+          UserPage()
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -54,6 +56,7 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "首页"),
           BottomNavigationBarItem(icon: Icon(Icons.list), label: "列表"),
           BottomNavigationBarItem(icon: Icon(Icons.timeline), label: "排行"),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "我的"),
         ],
         currentIndex: _pageIndex,
         backgroundColor: Colors.white,

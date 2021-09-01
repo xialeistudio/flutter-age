@@ -17,7 +17,7 @@ class ItemGridSliver extends StatelessWidget {
       sliver: SliverGrid(
         delegate: SliverChildBuilderDelegate(
           (context, index) {
-            return GridItem(item: items[index]);
+            return ListItemWidget(item: items[index]);
           },
           childCount: items.length,
         ),
@@ -31,10 +31,10 @@ class ItemGridSliver extends StatelessWidget {
   }
 }
 
-class GridItem extends StatelessWidget {
+class ListItemWidget extends StatelessWidget {
   final ListItem item;
 
-  const GridItem({Key? key, required this.item}) : super(key: key);
+  const ListItemWidget({Key? key, required this.item}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
