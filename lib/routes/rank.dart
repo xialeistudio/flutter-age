@@ -39,6 +39,7 @@ class RankPageState extends State<RankPage> {
               SliverToBoxAdapter(
                 child: TitleBar(
                   title: "排行榜",
+                  iconData: Icons.timeline,
                   trailing: Row(children: [Text("前"), Text("${list.length}", style: TextStyle(color: Colors.orange)), Text("部")]),
                 ),
               ),

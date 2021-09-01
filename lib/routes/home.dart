@@ -55,10 +55,10 @@ class HomePageState extends State<HomePage> {
           slivers: [
             HomeSwipeSliver(),
             SliverPadding(padding: const EdgeInsets.only(top: 8)),
-            SliverToBoxAdapter(child: TitleBar(title: "每日推荐")),
+            SliverToBoxAdapter(child: TitleBar(title: "每日推荐", iconData: Icons.recommend)),
             ItemGridSliver(items: _recommendList),
             SliverPadding(padding: const EdgeInsets.only(top: 8)),
-            SliverToBoxAdapter(child: TitleBar(title: "最近更新")),
+            SliverToBoxAdapter(child: TitleBar(title: "最近更新", iconData: Icons.update)),
             ItemGridSliver(items: _updateList),
             SliverPadding(padding: const EdgeInsets.only(bottom: 20)),
           ],

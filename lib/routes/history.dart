@@ -36,6 +36,7 @@ class HistoryPageState extends State<HistoryPage> {
               SliverToBoxAdapter(
                 child: TitleBar(
                   title: "历史记录",
+                  iconData: Icons.history,
                   trailing: InkWell(child: Text("清空", style: TextStyle(color: Colors.orange)), onTap: () => confirmClear(context)),
                 ),
               ),

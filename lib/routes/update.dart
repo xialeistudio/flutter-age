@@ -42,6 +42,7 @@ class UpdatePageState extends State<UpdatePage> {
                 SliverToBoxAdapter(
                   child: TitleBar(
                     title: "最近更新",
+                    iconData: Icons.update,
                     trailing: Row(children: [Text("共"), Text("$count", style: TextStyle(color: Colors.orange)), Text("部")]),
                   ),
                 ),

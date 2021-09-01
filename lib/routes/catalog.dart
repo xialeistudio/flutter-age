@@ -78,6 +78,7 @@ class CatalogPageState extends State<CatalogPage> {
                 child: TitleBar(
                   title: "动漫列表",
                   trailing: Row(children: [Text("共"), Text("$count", style: TextStyle(color: Colors.orange)), Text("部")]),
+                  iconData: Icons.list,
                 ),
               ),
               SliverList(

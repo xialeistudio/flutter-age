@@ -42,6 +42,7 @@ class RecommendPageState extends State<RecommendPage> {
                 SliverToBoxAdapter(
                   child: TitleBar(
                     title: "推荐列表",
+                    iconData: Icons.recommend,
                     trailing: Row(children: [Text("共"), Text("$count", style: TextStyle(color: Colors.orange)), Text("部")]),
                   ),
                 ),

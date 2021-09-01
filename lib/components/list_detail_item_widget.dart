@@ -32,7 +32,7 @@ class ListDetailItemWidget extends StatelessWidget {
                     // 标题
                     Text(
                       item.title!,
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 8),
                     // 元数据

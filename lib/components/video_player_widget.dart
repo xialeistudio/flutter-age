@@ -41,6 +41,11 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
             onWebViewCreated: (controller) {
               widget.controllerFuture.complete(controller);
             },
+            onPageStarted: (url) {
+              setState(() {
+                _videoUrl = null;
+              });
+            },
             onPageFinished: (url) {
               findVideoUrl(url);
             },
@@ -91,7 +96,6 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     _timer?.cancel();
     var count = 0;
     _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
-      print("findVideoUrl for $url");
       var controller = await widget.controllerFuture.future;
       var videoUrl = await controller.evaluateJavascript("document.querySelector('video') && document.querySelector('video').src");
       if (videoUrl != "<null>" || ++count >= 60) {
