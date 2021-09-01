@@ -17,6 +17,11 @@ void main() {
       primaryColor: Colors.white,
       scaffoldBackgroundColor: Colors.white,
       fontFamily: "FangZhengLanTingXiHei",
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        unselectedItemColor: Colors.black87,
+        selectedItemColor: Colors.orange,
+        showUnselectedLabels: true,
+      ),
     ),
     routes: {
       '/detail': (context) {
@@ -56,10 +61,6 @@ class MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "我的"),
         ],
         currentIndex: _pageIndex,
-        backgroundColor: Colors.white,
-        unselectedItemColor: Colors.black,
-        selectedItemColor: Colors.orange,
-        showUnselectedLabels: true,
         onTap: (index) {
           setState(() => _pageIndex = index);
         },
