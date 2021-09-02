@@ -92,7 +92,7 @@ class SearchBarDelegate extends SearchDelegate<String> {
               if (index.isOdd) {
                 return Divider();
               }
-              return ListDetailItemWidget(item: list[index]);
+              return ListDetailItemWidget(item: list[index ~/ 2]);
             },
             childCount: max(0, list.length * 2 - 1),
           ),
