@@ -29,20 +29,17 @@ class HistoryPageState extends State<HistoryPage> {
         title: Text('历史记录'),
       ),
       body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: loadData,
-          child: CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: TitleBar(
-                  title: "历史记录",
-                  iconData: Icons.history,
-                  trailing: InkWell(child: Text("清空", style: TextStyle(color: Colors.orange)), onTap: () => confirmClear(context)),
-                ),
+        child: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: TitleBar(
+                title: "历史记录",
+                iconData: Icons.history,
+                trailing: InkWell(child: Text("清空", style: TextStyle(color: Colors.orange)), onTap: () => confirmClear(context)),
               ),
-              ItemGridSliver(items: list),
-            ],
-          ),
+            ),
+            ItemGridSliver(items: list),
+          ],
         ),
       ),
     );
@@ -60,16 +57,17 @@ class HistoryPageState extends State<HistoryPage> {
       context: context,
       barrierDismissible: true,
       builder: (context) {
-        return AlertDialog(
+        return CupertinoAlertDialog(
           title: Text("提示"),
           content: Text("确定清空吗?"),
           actions: [
-            TextButton(
+            CupertinoDialogAction(
                 child: Text("清空"),
+                isDestructiveAction: true,
                 onPressed: () async {
                   Navigator.of(context).pop(true);
                 }),
-            TextButton(
+            CupertinoDialogAction(
               child: Text("取消"),
               onPressed: () {
                 Navigator.of(context).pop(); //关闭对话框
@@ -79,7 +77,7 @@ class HistoryPageState extends State<HistoryPage> {
         );
       },
     );
-    if (!result) {
+    if (result == null || !result) {
       return;
     }
     await historyManager.clear();

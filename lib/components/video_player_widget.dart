@@ -61,7 +61,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       return buildWebView();
     }
     if (_flickManager == null) {
-      return Center(child: CircularProgressIndicator());
+      return Center(child: CupertinoActivityIndicator());
     }
     return FlickVideoPlayer(flickManager: _flickManager!);
   }
@@ -90,7 +90,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
             findVideoUrl(url);
           },
         ),
-        Container(decoration: BoxDecoration(color: Colors.black), child: Center(child: CircularProgressIndicator()))
+        Container(decoration: BoxDecoration(color: Colors.black), child: Center(child: CupertinoActivityIndicator()))
       ],
     );
   }

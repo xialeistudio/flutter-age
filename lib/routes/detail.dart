@@ -57,7 +57,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     Widget child;
     if (_animationInfo == null) {
-      child = Center(child: CircularProgressIndicator());
+      child = Center(child: CupertinoActivityIndicator());
     } else {
       child = buildBody(_animationInfo!, _relationList, _recommendList);
     }

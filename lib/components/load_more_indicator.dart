@@ -86,7 +86,7 @@ class _LoadMoreIndicatorBar extends StatelessWidget {
     if (loading) {
       return Container(
         alignment: Alignment.center,
-        child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+        child: SizedBox(width: 20, height: 20, child: CupertinoActivityIndicator()),
         padding: const EdgeInsets.symmetric(vertical: 4),
       );
     }

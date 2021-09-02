@@ -5,6 +5,7 @@ import 'package:age/components/title_bar.dart';
 import 'package:age/lib/http/client.dart';
 import 'package:age/lib/model/list_detail_item.dart';
 import 'package:age/lib/model/pair.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// 搜索页
@@ -58,9 +59,7 @@ class SearchBarDelegate extends SearchDelegate<String> {
           }
           return SafeArea(child: buildSearchList(snapshot.data!));
         }
-        return Center(
-          child: CircularProgressIndicator(),
-        );
+        return Center(child: CupertinoActivityIndicator());
       },
       future: httpClient.search(query),
     );

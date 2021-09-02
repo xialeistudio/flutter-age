@@ -8,6 +8,7 @@ import 'package:age/lib/global.dart';
 import 'package:age/lib/http/client.dart';
 import 'package:age/lib/model/list_detail_item.dart';
 import 'package:age/routes/search.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CatalogPage extends StatefulWidget {
@@ -59,42 +60,44 @@ class CatalogPageState extends State<CatalogPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildMainAppBar(context, title: "全部动漫"),
-      body: filterData == null ? Center(child: CircularProgressIndicator()) : buildListView(),
+      body: filterData == null ? Center(child: CupertinoActivityIndicator()) : buildListView(),
     );
   }
 
   /// 构造列表
   Widget buildListView() {
     return SafeArea(
-      child: RefreshIndicator(
-        onRefresh: () => onRefresh(cached: false),
-        child: LoadMoreIndicator(
-          hasMore: hasMore,
-          onLoadMore: onLoadMore,
-          child: CustomScrollView(
-            slivers: [
-              ListFilterSliver(filterData: filterData!, filter: filter, onChange: onFilterChange),
-              SliverPadding(padding: const EdgeInsets.only(bottom: 10)),
-              SliverToBoxAdapter(
-                child: TitleBar(
-                  title: "动漫列表",
-                  trailing: Row(children: [Text("共"), Text("$count", style: TextStyle(color: Colors.orange)), Text("部")]),
-                  iconData: Icons.list,
-                ),
+      child: LoadMoreIndicator(
+        hasMore: hasMore,
+        onLoadMore: onLoadMore,
+        child: CustomScrollView(
+          slivers: [
+            CupertinoSliverRefreshControl(
+              refreshTriggerPullDistance: 100.0,
+              refreshIndicatorExtent: 60.0,
+              onRefresh: () => onRefresh(cached: false),
+            ),
+            ListFilterSliver(filterData: filterData!, filter: filter, onChange: onFilterChange),
+            SliverPadding(padding: const EdgeInsets.only(bottom: 10)),
+            SliverToBoxAdapter(
+              child: TitleBar(
+                title: "动漫列表",
+                trailing: Row(children: [Text("共"), Text("$count", style: TextStyle(color: Colors.orange)), Text("部")]),
+                iconData: Icons.list,
               ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    if (index.isOdd) {
-                      return Divider();
-                    }
-                    return ListDetailItemWidget(item: list[index ~/ 2]);
-                  },
-                  childCount: max(0, list.length * 2 - 1),
-                ),
+            ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                  if (index.isOdd) {
+                    return Divider();
+                  }
+                  return ListDetailItemWidget(item: list[index ~/ 2]);
+                },
+                childCount: max(0, list.length * 2 - 1),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -140,7 +143,6 @@ class ListFilterSliver extends StatelessWidget {
           var name = values.elementAt(0);
           // 字段选择项
           var options = values.sublist(1);
-          var borderColor = Color.fromRGBO(200, 200, 200, 1);
           // 已选择项目
           var selectedOption = filter[field] ?? '全部';
           if (selectedOption == 'all') {

@@ -3,6 +3,7 @@ import 'package:age/components/title_bar.dart';
 import 'package:age/lib/global.dart';
 import 'package:age/lib/data_manager.dart';
 import 'package:age/lib/model/list_item.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class UserPage extends StatefulWidget {
@@ -35,16 +36,18 @@ class UserPageState extends State<UserPage> {
     return Scaffold(
       appBar: buildMainAppBar(context, title: "我的"),
       body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: loadData,
-          child: CustomScrollView(
-            slivers: [
-              buildTitleBarSliver(context, "历史记录", Icons.history, () => Navigator.pushNamed(context, "/history")),
-              buildDataListSliver(historyList),
-              buildTitleBarSliver(context, "收藏列表", Icons.favorite, () => Navigator.pushNamed(context, "/favorite")),
-              buildDataListSliver(favoriteList),
-            ],
-          ),
+        child: CustomScrollView(
+          slivers: [
+            CupertinoSliverRefreshControl(
+              refreshTriggerPullDistance: 100.0,
+              refreshIndicatorExtent: 60.0,
+              onRefresh: loadData,
+            ),
+            buildTitleBarSliver(context, "历史记录", Icons.history, () => Navigator.pushNamed(context, "/history")),
+            buildDataListSliver(historyList),
+            buildTitleBarSliver(context, "收藏列表", Icons.favorite, () => Navigator.pushNamed(context, "/favorite")),
+            buildDataListSliver(favoriteList),
+          ],
         ),
       ),
     );
