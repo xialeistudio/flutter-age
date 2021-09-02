@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:age/components/list_detail_item_widget.dart';
 import 'package:age/components/title_bar.dart';
 import 'package:age/lib/http/client.dart';
@@ -88,9 +90,12 @@ class SearchBarDelegate extends SearchDelegate<String> {
         SliverList(
           delegate: SliverChildBuilderDelegate(
             (context, index) {
+              if (index.isOdd) {
+                return Divider();
+              }
               return ListDetailItemWidget(item: list[index]);
             },
-            childCount: list.length,
+            childCount: max(0, list.length * 2 - 1),
           ),
         ),
       ],

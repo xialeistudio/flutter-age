@@ -1,9 +1,9 @@
-import 'package:age/components/border_container.dart';
+import 'dart:math';
+
 import 'package:age/components/title_bar.dart';
 import 'package:age/lib/global.dart';
 import 'package:age/lib/http/client.dart';
 import 'package:age/lib/model/count_list_item.dart';
-import 'package:age/routes/search.dart';
 import 'package:flutter/material.dart';
 
 class RankPage extends StatefulWidget {
@@ -32,7 +32,7 @@ class RankPageState extends State<RankPage> {
       appBar: buildMainAppBar(context, title: "排行榜"),
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: () => onRefresh(cached: false),
+          onRefresh: () => onRefresh(),
           child: CustomScrollView(
             slivers: [
               buildOptionsSliver(),
@@ -56,29 +56,30 @@ class RankPageState extends State<RankPage> {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, index) {
-          var item = list[index];
+          if (index.isOdd) {
+            return Divider();
+          }
+          var item = list[index ~/ 2];
           var color = Colors.grey;
           if (index < 10) {
             color = Colors.orange;
           }
-          return BorderContainer(
-            child: ListTile(
-              onTap: () => Navigator.pushNamed(context, "/detail", arguments: {'id': item.aid, 'title': item.title}),
-              leading: Container(
-                width: 32,
-                height: 32,
-                alignment: Alignment.center,
-                child: Text("${index + 1}", style: TextStyle(color: color)),
-                decoration: BoxDecoration(border: Border.all(color: color), borderRadius: BorderRadius.circular(16)),
-              ),
-              title: Text(item.title!, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14)),
-              trailing: Text("${item.cCnt}"),
-              visualDensity: VisualDensity(vertical: -4, horizontal: -4),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+          return ListTile(
+            onTap: () => Navigator.pushNamed(context, "/detail", arguments: {'id': item.aid, 'title': item.title}),
+            leading: Container(
+              width: 32,
+              height: 32,
+              alignment: Alignment.center,
+              child: Text("${index + 1}", style: TextStyle(color: color)),
+              decoration: BoxDecoration(border: Border.all(color: color), borderRadius: BorderRadius.circular(16)),
             ),
+            title: Text(item.title!, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14)),
+            trailing: Text("${item.cCnt}"),
+            visualDensity: VisualDensity(vertical: -4, horizontal: -4),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10),
           );
         },
-        childCount: list.length,
+        childCount: max(0, list.length * 2 - 1),
       ),
     );
   }
@@ -93,8 +94,8 @@ class RankPageState extends State<RankPage> {
     });
   }
 
-  onRefresh({cached = true}) async {
-    var data = await httpClient.loadRank(year: year, cached: cached);
+  onRefresh() async {
+    var data = await httpClient.loadRank(year: year, cached: false);
     setState(() {
       list = data.first;
       count = data.second;
@@ -103,8 +104,8 @@ class RankPageState extends State<RankPage> {
 
   buildOptionsSliver() {
     return SliverToBoxAdapter(
-      child: BorderContainer(
-        child: Container(
+      child: Column(children: [
+        Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(color: Colors.white),
           height: 50,
@@ -140,7 +141,8 @@ class RankPageState extends State<RankPage> {
             ],
           ),
         ),
-      ),
+        Divider(),
+      ]),
     );
   }
 

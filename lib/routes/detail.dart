@@ -1,6 +1,6 @@
 import 'dart:async';
+import 'dart:math';
 
-import 'package:age/components/border_container.dart';
 import 'package:age/components/detail_animation_info.dart';
 import 'package:age/components/item_grid_sliver.dart';
 import 'package:age/components/title_bar.dart';
@@ -146,14 +146,11 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
 
   /// 构造简介
   Widget buildDescription(AnimationInfo animationInfo) {
-    return BorderContainer(
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        child: Text(animationInfo.description!),
-      ),
-      top: true,
-      bottom: true,
-    );
+    return Column(children: [
+      Divider(),
+      Padding(padding: const EdgeInsets.all(8), child: Text(animationInfo.description!)),
+      Divider(),
+    ]);
   }
 
   Future<void> loadData({cached = true}) async {
@@ -194,7 +191,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
           }
           playVideo(selected);
         },
-        icon: Icon(Icons.arrow_forward_ios),
+        icon: Icon(Icons.arrow_forward_ios, color: Colors.black38),
         iconSize: 18,
       ),
     );
@@ -242,19 +239,20 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, index) {
-          var item = relationList[index];
-          return BorderContainer(
-            child: ListTile(
-              visualDensity: VisualDensity(vertical: -4),
-              title: Text(item.title!, style: TextStyle(fontSize: 14)),
-              tileColor: Colors.white,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-              trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black),
-              onTap: () => Navigator.pushNamed(context, "/detail", arguments: {'id': item.aid, 'title': item.title}),
-            ),
+          if (index.isOdd) {
+            return Divider();
+          }
+          var item = relationList[index ~/ 2];
+          return ListTile(
+            visualDensity: VisualDensity(vertical: -4),
+            title: Text(item.title!, style: TextStyle(fontSize: 14)),
+            tileColor: Colors.white,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+            trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black38),
+            onTap: () => Navigator.pushNamed(context, "/detail", arguments: {'id': item.aid, 'title': item.title}),
           );
         },
-        childCount: relationList.length,
+        childCount: max(0, relationList.length * 2 - 1),
       ),
     );
   }

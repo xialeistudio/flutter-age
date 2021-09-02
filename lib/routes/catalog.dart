@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'dart:math';
 
 import 'package:age/components/list_detail_item_widget.dart';
 import 'package:age/components/load_more_indicator.dart';
@@ -84,9 +85,12 @@ class CatalogPageState extends State<CatalogPage> {
               SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    return ListDetailItemWidget(item: list[index]);
+                    if (index.isOdd) {
+                      return Divider();
+                    }
+                    return ListDetailItemWidget(item: list[index ~/ 2]);
                   },
-                  childCount: list.length,
+                  childCount: max(0, list.length * 2 - 1),
                 ),
               ),
             ],
@@ -123,13 +127,15 @@ class ListFilterSliver extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverFixedExtentList(
-      itemExtent: 40,
+    return SliverList(
       delegate: SliverChildBuilderDelegate(
         (context, index) {
+          if (index.isOdd) {
+            return Divider();
+          }
           // 字段标识
-          var field = filterData.entries.elementAt(index).key;
-          var values = filterData.entries.elementAt(index).value;
+          var field = filterData.entries.elementAt(index ~/ 2).key;
+          var values = filterData.entries.elementAt(index ~/ 2).value;
           // 字段中文名称
           var name = values.elementAt(0);
           // 字段选择项
@@ -141,11 +147,8 @@ class ListFilterSliver extends StatelessWidget {
             selectedOption = '全部';
           }
           return Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(bottom: BorderSide(color: borderColor, width: 0.5, style: BorderStyle.solid)),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            height: 40,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Flex(
               direction: Axis.horizontal,
               children: [
@@ -179,7 +182,7 @@ class ListFilterSliver extends StatelessWidget {
             ),
           );
         },
-        childCount: filterData.length,
+        childCount: max(0, filterData.length * 2 - 1),
       ),
     );
   }
