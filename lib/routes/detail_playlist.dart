@@ -33,13 +33,13 @@ class DetailPlaylistPage extends StatelessWidget {
   Widget buildPlaylistItem(List<VideoInfo> videos) {
     return Container(
       decoration: BoxDecoration(color: Colors.white),
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      padding: const EdgeInsets.all(4),
       child: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 5,
-          mainAxisSpacing: 4,
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           crossAxisSpacing: 4,
-          mainAxisExtent: 40,
+          mainAxisExtent: 36,
+          maxCrossAxisExtent: 64,
+          mainAxisSpacing: 4
         ),
         itemBuilder: (context, index) {
           var item = videos[index];

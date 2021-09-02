@@ -33,7 +33,7 @@ class UserPageState extends State<UserPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("我的")),
+      appBar: buildMainAppBar(context, title: "我的"),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: loadData,

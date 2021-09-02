@@ -73,7 +73,7 @@ class RankPageState extends State<RankPage> {
               ),
               title: Text(item.title!, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14)),
               trailing: Text("${item.cCnt}"),
-              visualDensity: VisualDensity(vertical: -4),
+              visualDensity: VisualDensity(vertical: -4, horizontal: -4),
               contentPadding: const EdgeInsets.symmetric(horizontal: 10),
             ),
             decoration: BoxDecoration(

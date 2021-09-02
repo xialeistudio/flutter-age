@@ -144,10 +144,10 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
           SliverToBoxAdapter(child: buildPlaylistHeader(playlists)),
           SliverToBoxAdapter(child: buildPlaylistBody(playlists)),
           SliverPadding(padding: const EdgeInsets.only(top: 8)),
-          SliverToBoxAdapter(child: TitleBar(title: "相关动画")),
+          SliverToBoxAdapter(child: TitleBar(title: "相关动画", iconData: Icons.attachment)),
           buildRelationList(relationList),
           SliverPadding(padding: const EdgeInsets.only(top: 8)),
-          SliverToBoxAdapter(child: TitleBar(title: "猜你喜欢")),
+          SliverToBoxAdapter(child: TitleBar(title: "猜你喜欢",iconData: Icons.favorite)),
           ItemGridSliver(items: recommendList),
           SliverPadding(padding: const EdgeInsets.only(bottom: 20)),
         ],
@@ -241,7 +241,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   /// 构造播放列表
   buildPlaylistBody(List<List<VideoInfo>> list) {
     return Container(
-      height: 40,
+      height: 36,
       child: TabBarView(
         children: list.map((e) => buildPlaylistItem(e)).toList(),
       ),

@@ -46,7 +46,7 @@ class PlaylistItem extends StatelessWidget {
       borderColor = textColor;
     }
     return Container(
-      child: Text(video.title!, style: TextStyle(fontSize: 14, color: textColor)),
+      child: Text(video.title!, style: TextStyle(fontSize: 12, color: textColor)),
       padding: const EdgeInsets.symmetric(horizontal: 8),
       alignment: Alignment.center,
       decoration: BoxDecoration(border: Border.all(width: 0.5, color: borderColor)),
