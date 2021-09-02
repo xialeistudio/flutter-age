@@ -61,7 +61,7 @@ class RankPageState extends State<RankPage> {
           if (index < 10) {
             color = Colors.orange;
           }
-          return Container(
+          return BorderContainer(
             child: ListTile(
               onTap: () => Navigator.pushNamed(context, "/detail", arguments: {'id': item.aid, 'title': item.title}),
               leading: Container(
@@ -76,9 +76,6 @@ class RankPageState extends State<RankPage> {
               visualDensity: VisualDensity(vertical: -4, horizontal: -4),
               contentPadding: const EdgeInsets.symmetric(horizontal: 10),
             ),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(bottom: BorderSide(color: Color.fromRGBO(220, 220, 220, 0.5), width: 1, style: BorderStyle.solid))),
           );
         },
         childCount: list.length,

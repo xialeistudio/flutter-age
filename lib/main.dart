@@ -22,6 +22,9 @@ void main() {
         selectedItemColor: Colors.orange,
         showUnselectedLabels: true,
       ),
+      dividerTheme: DividerThemeData(
+        space: 1,
+      ),
     ),
     routes: {
       '/detail': (context) {
