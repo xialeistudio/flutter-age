@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flick_video_player/flick_video_player.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -61,7 +60,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       return buildWebView();
     }
     if (_flickManager == null) {
-      return Center(child: CupertinoActivityIndicator());
+      return Center(child: CircularProgressIndicator());
     }
     return FlickVideoPlayer(flickManager: _flickManager!);
   }
@@ -90,7 +89,7 @@ class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
             findVideoUrl(url);
           },
         ),
-        Container(decoration: BoxDecoration(color: Colors.black), child: Center(child: CupertinoActivityIndicator()))
+        Container(decoration: BoxDecoration(color: Colors.black), child: Center(child: CircularProgressIndicator()))
       ],
     );
   }
