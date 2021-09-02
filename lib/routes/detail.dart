@@ -16,7 +16,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 /// 详情页
 class DetailPage extends StatefulWidget {
@@ -34,7 +33,6 @@ class DetailPage extends StatefulWidget {
 class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   final String id;
   final String title;
-  Completer<WebViewController> webviewControllerFuture = Completer();
 
   // 页面数据
   AnimationInfo? _animationInfo;
@@ -63,36 +61,33 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
     } else {
       child = buildBody(_animationInfo!, _relationList, _recommendList);
     }
-    return WillPopScope(
-      child: Scaffold(
-        appBar: AppBar(
-          title: ValueListenableBuilder(
-            builder: (context, VideoInfo value, child) {
-              if (value.playVid == null) {
-                return Text(title);
-              }
-              return Text("$title(${value.title!})");
-            },
-            valueListenable: playingVideo,
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        title: ValueListenableBuilder(
+          builder: (context, VideoInfo value, child) {
+            if (value.playVid == null) {
+              return Text(title);
+            }
+            return Text("$title(${value.title!})");
+          },
+          valueListenable: playingVideo,
         ),
-        body: SafeArea(child: child),
-        floatingActionButton: _animationInfo == null
-            ? null
-            : ValueListenableBuilder(
-                builder: (context, bool value, child) {
-                  return FloatingActionButton(
-                    child: Icon(Icons.favorite),
-                    backgroundColor: value ? Colors.green : Colors.orange,
-                    onPressed: () {
-                      handleFavorite(value);
-                    },
-                  );
-                },
-                valueListenable: favorite,
-              ),
       ),
-      onWillPop: stopWebview,
+      body: SafeArea(child: child),
+      floatingActionButton: _animationInfo == null
+          ? null
+          : ValueListenableBuilder(
+              builder: (context, bool value, child) {
+                return FloatingActionButton(
+                  child: Icon(Icons.favorite),
+                  backgroundColor: value ? Colors.green : Colors.orange,
+                  onPressed: () {
+                    handleFavorite(value);
+                  },
+                );
+              },
+              valueListenable: favorite,
+            ),
     );
   }
 
@@ -114,12 +109,6 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
     }
   }
 
-  /// 停止webview
-  Future<bool> stopWebview() async {
-    webviewControllerFuture.future.then((value) => value.loadUrl("about:blank"));
-    return true;
-  }
-
   /// 构造正文
   Widget buildBody(AnimationInfo animationInfo, List<ListItem> relationList, recommendList) {
     var playlists = animationInfo.playlists!.where((element) => element.length > 0).toList();
@@ -134,7 +123,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
                 if (value == "") {
                   return DetailAnimationInfo(info: animationInfo);
                 }
-                return VideoPlayerWidget(url: value, controllerFuture: webviewControllerFuture);
+                return VideoPlayerWidget(url: value);
               },
               valueListenable: playingVideoUrl,
             ),
@@ -147,7 +136,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
           SliverToBoxAdapter(child: TitleBar(title: "相关动画", iconData: Icons.attachment)),
           buildRelationList(relationList),
           SliverPadding(padding: const EdgeInsets.only(top: 8)),
-          SliverToBoxAdapter(child: TitleBar(title: "猜你喜欢",iconData: Icons.favorite)),
+          SliverToBoxAdapter(child: TitleBar(title: "猜你喜欢", iconData: Icons.favorite)),
           ItemGridSliver(items: recommendList),
           SliverPadding(padding: const EdgeInsets.only(bottom: 20)),
         ],
@@ -279,19 +268,19 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
     try {
       var globalConfig = await httpClient.loadGlobalPlayConfig();
       var playConfig = await httpClient.loadVideoPlayConfig(video, globalConfig);
-      if (playConfig.vurl!.contains("404.mp4")) {
+      var videoUrl = Uri.decodeFull(playConfig.vurl!);
+      if (videoUrl.contains("404.mp4")) {
         Fluttertoast.showToast(msg: "播放失败: 404", gravity: ToastGravity.CENTER);
         return;
       }
-      playingVideoUrl.value = playConfig.purlf! + playConfig.vurl!;
       playingVideo.value = video;
-      var controller = await webviewControllerFuture.future;
-      controller.loadUrl(playingVideoUrl.value, headers: {
-        'Referrer': 'https://web.age-spa.com:8443/',
-        'Sec-Fetch-Dest': 'iframe',
-        'Sec-Fetch-Site': 'cross-site',
-        'Sec-Fetch-Mode': 'navigate'
-      });
+      if (videoUrl.endsWith(".mp4") || videoUrl.endsWith(".m3u8")) {
+        // 直接使用视频链接播放
+        playingVideoUrl.value = videoUrl;
+        return;
+      }
+      // 使用webview
+      playingVideoUrl.value = playConfig.purlf! + playConfig.vurl!;
     } on DioError catch (err) {
       Fluttertoast.showToast(msg: "播放失败:${err.message}", gravity: ToastGravity.CENTER);
     } finally {
