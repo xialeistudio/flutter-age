@@ -1,17 +1,19 @@
 import 'dart:async';
+import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:video_player/video_player.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 /// 播放器
-/// 如果链接以mp4结尾，调用原生播放器，否则用Webview
+/// 1.如果videoUrl是mp4或m3u8则直接播放
+/// 2.否则初始化webview获取播放链接
+/// 3.播放webview拿到的链接
 class VideoPlayerWidget extends StatefulWidget {
+  /// 视频或播放器链接
   final String url;
-  final Completer<WebViewController> controllerFuture;
 
-  const VideoPlayerWidget({Key? key, required this.controllerFuture, required this.url}) : super(key: key);
+  const VideoPlayerWidget({Key? key, required this.url}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -21,91 +23,114 @@ class VideoPlayerWidget extends StatefulWidget {
 
 class VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   Timer? _timer;
-  String? _videoUrl;
+
+  /// 播放器
+  FlickManager? _flickManager;
+
+  /// Webview
+  Completer<WebViewController>? _webviewController;
+  String? _webviewUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    // 加载视频
+    loadVideoUrl();
+  }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _flickManager?.dispose();
+    stopWebview();
     super.dispose();
+  }
+
+  Future<void> stopWebview({url = "about:blank"}) async {
+    var controller = await _webviewController?.future;
+    controller?.loadUrl(url);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Container(height: 250, child: buildBody());
+  }
+
+  Widget buildBody() {
+    if (_webviewUrl != null) {
+      return buildWebView();
+    }
+    if (_flickManager == null) {
+      return Center(child: CircularProgressIndicator());
+    }
+    return FlickVideoPlayer(flickManager: _flickManager!);
+  }
+
+  @override
+  void didUpdateWidget(VideoPlayerWidget oldWidget) {
+    if (oldWidget.url != widget.url) {
+      loadVideoUrl();
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  /// 构造webview
+  Widget buildWebView() {
+    return Stack(
+      fit: StackFit.expand,
       children: [
-        Container(
-          child: WebView(
-            initialUrl: widget.url,
-            javascriptMode: JavascriptMode.unrestricted,
-            allowsInlineMediaPlayback: true,
-            onWebViewCreated: (controller) {
-              widget.controllerFuture.complete(controller);
-            },
-            onPageStarted: (url) {
-              setState(() {
-                _videoUrl = null;
-              });
-            },
-            onPageFinished: (url) {
-              findVideoUrl(url);
-            },
-          ),
-          height: 250,
+        WebView(
+          initialUrl: _webviewUrl!,
+          javascriptMode: JavascriptMode.unrestricted,
+          allowsInlineMediaPlayback: true,
+          onWebViewCreated: (controller) {
+            _webviewController?.complete(controller);
+          },
+          onPageFinished: (url) {
+            findVideoUrl(url);
+          },
         ),
-        Container(
-          decoration: BoxDecoration(color: Colors.white),
-          padding: const EdgeInsets.all(8),
-          child: Flex(
-            direction: Axis.horizontal,
-            children: buildCopyVideoUrl(),
-          ),
-        ),
+        Container(decoration: BoxDecoration(color: Colors.black), child: Center(child: CircularProgressIndicator()))
       ],
     );
   }
 
-  List<Widget> buildCopyVideoUrl() {
-    var widgets = [
-      Text("视频链接:"),
-      Expanded(
-        child: Text(
-          _videoUrl == null ? "获取中" : "获取成功",
-          style: TextStyle(
-            color: _videoUrl == null ? Colors.grey : Colors.green,
-          ),
-        ),
-      ),
-    ];
-    if (_videoUrl != null) {
-      widgets.add(InkWell(
-        onTap: () async {
-          await Clipboard.setData(ClipboardData(text: _videoUrl));
-          Fluttertoast.showToast(msg: "复制成功", gravity: ToastGravity.CENTER);
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Text("复制"),
-        ),
-      ));
-    }
-    return widgets;
-  }
-
-// 查找video的链接
+  /// 查找video的链接
   void findVideoUrl(String url) {
     _timer?.cancel();
     var count = 0;
     _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
-      var controller = await widget.controllerFuture.future;
-      var videoUrl = await controller.evaluateJavascript("document.querySelector('video') && document.querySelector('video').src");
+      var controller = await _webviewController?.future;
+      var videoUrl = await controller?.evaluateJavascript("document.querySelector('video') && document.querySelector('video').src");
       if (videoUrl != "<null>" || ++count >= 60) {
         timer.cancel();
       }
       if (videoUrl != '<null>') {
+        stopWebview();
         setState(() {
-          _videoUrl = videoUrl;
+          _webviewUrl = null;
+          _flickManager = FlickManager(videoPlayerController: VideoPlayerController.network(videoUrl!));
         });
       }
+    });
+  }
+
+  /// 解析视频链接
+  Future<void> loadVideoUrl() async {
+    // 停止播放
+    stopWebview();
+    _flickManager?.flickControlManager?.pause();
+    if (widget.url.endsWith(".mp4") || widget.url.endsWith(".m3u8")) {
+      setState(() {
+        _flickManager = FlickManager(videoPlayerController: VideoPlayerController.network(widget.url));
+      });
+      return;
+    }
+
+    // 初始化webview进行解析
+    _webviewController = Completer();
+    setState(() {
+      _webviewUrl = widget.url;
     });
   }
 }
