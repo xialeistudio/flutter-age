@@ -11,7 +11,12 @@ class WeeklyTabView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var weekday = DateTime.now().weekday;
+    if (weekday == 7) {
+      weekday = 0;
+    }
     return DefaultTabController(
+      initialIndex: weekdayNameMap.keys.toList().indexOf(weekday),
       length: weeklyList.length,
       child: Column(
         children: [buildTabBar(context), buildTabview(context)],
