@@ -46,7 +46,6 @@ class VideoPlayerState extends State<VideoPlayer> {
     return Column(
       children: [
         Container(
-          height: 250,
           child: FlickVideoPlayer(
             flickManager: _flickManager,
             flickVideoWithControlsFullscreen: FlickVideoWithControls(
