@@ -272,6 +272,10 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
       var playConfig = await httpClient.loadVideoPlayConfig(video, globalConfig);
       _playingVideo.value = video;
       var videoUrl = Uri.decodeFull(playConfig.vurl!);
+      if (videoUrl.endsWith("404.mp4")) {
+        Fluttertoast.showToast(msg: "播放失败:视频不存在", gravity: ToastGravity.CENTER);
+        return;
+      }
       if (videoUrl.endsWith(".mp4") || videoUrl.endsWith(".m3u8")) {
         _playingVideoUrl.value = videoUrl;
         return;
