@@ -94,7 +94,7 @@ class CatalogPageState extends State<CatalogPage> {
                   }
                   return ListDetailItemWidget(item: list[index ~/ 2]);
                 },
-                childCount: max(0, list.length * 2 - 1),
+                childCount: list.length * 2,
               ),
             ),
           ],
@@ -184,7 +184,7 @@ class ListFilterSliver extends StatelessWidget {
             ),
           );
         },
-        childCount: max(0, filterData.length * 2 - 1),
+        childCount: filterData.length * 2,
       ),
     );
   }

@@ -16,7 +16,6 @@ void main() {
     theme: ThemeData(
       primaryColor: Colors.white,
       scaffoldBackgroundColor: Colors.white,
-      fontFamily: "FangZhengLanTingXiHei",
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         unselectedItemColor: Colors.black87,
         selectedItemColor: Colors.orange,

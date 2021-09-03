@@ -82,7 +82,7 @@ class RankPageState extends State<RankPage> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 10),
           );
         },
-        childCount: max(0, list.length * 2 - 1),
+        childCount: list.length * 2,
       ),
     );
   }

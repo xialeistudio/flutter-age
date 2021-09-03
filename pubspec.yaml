@@ -84,10 +84,3 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
-  fonts:
-    - family: Operator Mono
-      fonts:
-        - asset: assets/fonts/OperatorMono-Book.otf
-    - family: FangZhengLanTingXiHei
-      fonts:
-        - asset: assets/fonts/fzltxh.ttf

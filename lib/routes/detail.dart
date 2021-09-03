@@ -253,24 +253,21 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
             onTap: () => Navigator.pushNamed(context, "/detail", arguments: {'id': item.aid, 'title': item.title}),
           );
         },
-        childCount: max(0, relationList.length * 2 - 1),
+        childCount: relationList.length * 2,
       ),
     );
   }
 
   /// 播放
   playVideo(VideoInfo video) async {
-    if (video == _playingVideo.value) {
-      return;
-    }
     if (isLoading) {
       return;
     }
     isLoading = true;
     try {
+      _playingVideo.value = video;
       var globalConfig = await httpClient.loadGlobalPlayConfig();
       var playConfig = await httpClient.loadVideoPlayConfig(video, globalConfig);
-      _playingVideo.value = video;
       var videoUrl = Uri.decodeFull(playConfig.vurl!);
       if (videoUrl.endsWith("404.mp4")) {
         Fluttertoast.showToast(msg: "播放失败:视频不存在", gravity: ToastGravity.CENTER);
@@ -280,7 +277,8 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
         _playingVideoUrl.value = videoUrl;
         return;
       }
-      _playingVideoUrl.value = await parseWebviewVideoUrl(playConfig.purlf! + playConfig.vurl!);
+      videoUrl = await parseWebviewVideoUrl(playConfig.purlf! + playConfig.vurl!);
+      _playingVideoUrl.value = videoUrl;
     } on DioError catch (err) {
       Fluttertoast.showToast(msg: "播放失败:${err.message}", gravity: ToastGravity.CENTER);
     } catch (err) {

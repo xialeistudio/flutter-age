@@ -15,7 +15,7 @@ class WebviewVideoUrlParser extends StatefulWidget {
   /// 获取超时时间
   final int timeout;
 
-  const WebviewVideoUrlParser({Key? key, required this.result, required this.webviewUrl, this.timeout = 10}) : super(key: key);
+  const WebviewVideoUrlParser({Key? key, required this.result, required this.webviewUrl, this.timeout = 60}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {

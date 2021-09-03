@@ -46,10 +46,13 @@ class WeeklyTabView extends StatelessWidget {
 
   /// 单个播放列表
   Widget buildPlaylist(List<ListDayItem> list) {
-    return ListView.separated(
+    return ListView.builder(
       physics: NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
-        var item = list[index];
+        if (index.isOdd) {
+          return Divider();
+        }
+        var item = list[index ~/ 2];
         List<Widget> titleWidgets = [Text(item.name!, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14))];
         if (item.isnew!) {
           titleWidgets.add(SizedBox(width: 4));
@@ -63,10 +66,7 @@ class WeeklyTabView extends StatelessWidget {
           contentPadding: const EdgeInsets.symmetric(horizontal: 10),
         );
       },
-      separatorBuilder: (context, index) {
-        return Divider();
-      },
-      itemCount: list.length,
+      itemCount: list.length * 2,
     );
   }
 }
