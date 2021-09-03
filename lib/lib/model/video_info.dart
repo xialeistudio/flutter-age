@@ -31,4 +31,11 @@ class VideoInfo {
     map["Ex"] = ex;
     return map;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is VideoInfo && runtimeType == other.runtimeType && playId == other.playId && playVid == other.playVid;
+
+  @override
+  int get hashCode => playId.hashCode ^ playVid.hashCode;
 }

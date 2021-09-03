@@ -1,0 +1,15 @@
+@startuml
+'https://plantuml.com/state-diagram
+
+'skinparam linetype ortho
+'scale 350 width
+
+[*] --> 解析播放链接
+
+state 解析播放链接 {
+  1 -> 2: 231
+  2 -> 1: 21
+}
+
+
+@enduml

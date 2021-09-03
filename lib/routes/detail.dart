@@ -5,6 +5,7 @@ import 'package:age/components/detail_animation_info.dart';
 import 'package:age/components/item_grid_sliver.dart';
 import 'package:age/components/title_bar.dart';
 import 'package:age/components/video_player.dart';
+import 'package:age/components/webview_video_parser.dart';
 import 'package:age/lib/data_manager.dart';
 import 'package:age/lib/http/client.dart';
 import 'package:age/lib/model/album_info.dart';
@@ -40,8 +41,8 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   List<ListItem> _recommendList = [];
 
   // 播放相关
-  ValueNotifier<String> playingVideoUrl = ValueNotifier("");
-  ValueNotifier<VideoInfo> playingVideo = ValueNotifier(VideoInfo());
+  ValueNotifier<String> _playingVideoUrl = ValueNotifier("");
+  ValueNotifier<VideoInfo> _playingVideo = ValueNotifier(VideoInfo());
   ValueNotifier<bool> favorite = ValueNotifier(false);
   bool isLoading = false;
 
@@ -70,7 +71,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
             }
             return Text("$title(${value.title!})");
           },
-          valueListenable: playingVideo,
+          valueListenable: _playingVideo,
         ),
       ),
       body: SafeArea(child: child),
@@ -112,35 +113,33 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   /// 构造正文
   Widget buildBody(AnimationInfo animationInfo, List<ListItem> relationList, recommendList) {
     var playlists = animationInfo.playlists!.where((element) => element.length > 0).toList();
-    return DefaultTabController(
-      length: playlists.length,
-      child: CustomScrollView(
-        physics: BouncingScrollPhysics(),
-        slivers: [
-          SliverToBoxAdapter(
-            child: ValueListenableBuilder(
-              builder: (context, String value, child) {
-                if (value == "") {
-                  return DetailAnimationInfo(info: animationInfo);
-                }
-                return VideoPlayer(url: value);
-              },
-              valueListenable: playingVideoUrl,
-            ),
+    var tabController = TabController(length: playlists.length, vsync: this);
+    return CustomScrollView(
+      physics: BouncingScrollPhysics(),
+      slivers: [
+        SliverToBoxAdapter(
+          child: ValueListenableBuilder(
+            builder: (context, String value, child) {
+              if (value.isEmpty) {
+                return DetailAnimationInfo(info: animationInfo);
+              }
+              return VideoPlayer(videoUrl: value);
+            },
+            valueListenable: _playingVideoUrl,
           ),
-          SliverToBoxAdapter(child: buildDescription(animationInfo)),
-          SliverPadding(padding: const EdgeInsets.only(top: 8)),
-          SliverToBoxAdapter(child: buildPlaylistHeader(playlists)),
-          SliverToBoxAdapter(child: buildPlaylistBody(playlists)),
-          SliverPadding(padding: const EdgeInsets.only(top: 8)),
-          SliverToBoxAdapter(child: TitleBar(title: "相关动画", iconData: Icons.attachment)),
-          buildRelationList(relationList),
-          SliverPadding(padding: const EdgeInsets.only(top: 8)),
-          SliverToBoxAdapter(child: TitleBar(title: "猜你喜欢", iconData: Icons.favorite)),
-          ItemGridSliver(items: recommendList),
-          SliverPadding(padding: const EdgeInsets.only(bottom: 20)),
-        ],
-      ),
+        ),
+        SliverToBoxAdapter(child: buildDescription(animationInfo)),
+        SliverPadding(padding: const EdgeInsets.only(top: 8)),
+        SliverToBoxAdapter(child: buildPlaylistHeader(playlists, tabController)),
+        SliverToBoxAdapter(child: buildPlaylistBody(playlists, tabController)),
+        SliverPadding(padding: const EdgeInsets.only(top: 8)),
+        SliverToBoxAdapter(child: TitleBar(title: "相关动画", iconData: Icons.attachment)),
+        buildRelationList(relationList),
+        SliverPadding(padding: const EdgeInsets.only(top: 8)),
+        SliverToBoxAdapter(child: TitleBar(title: "猜你喜欢", iconData: Icons.favorite)),
+        ItemGridSliver(items: recommendList),
+        SliverPadding(padding: const EdgeInsets.only(bottom: 20)),
+      ],
     );
   }
 
@@ -172,8 +171,9 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   }
 
   /// 构造播放列表Tab
-  buildPlaylistHeader(List<List<VideoInfo>> playlists) {
+  buildPlaylistHeader(List<List<VideoInfo>> playlists, TabController tabController) {
     return PlaylistsBar(
+      tabController: tabController,
       playlists: playlists,
       trailing: IconButton(
         onPressed: () async {
@@ -181,7 +181,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
             context,
             MaterialPageRoute(
               builder: (context) {
-                return DetailPlaylistPage(playlists: playlists, defaultSelected: playingVideo.value);
+                return DetailPlaylistPage(playlists: playlists, defaultSelected: _playingVideo.value);
               },
               fullscreenDialog: true,
             ),
@@ -212,7 +212,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
                 builder: (context, VideoInfo value, child) {
                   return PlaylistItem(video: item, active: value.playVid == item.playVid);
                 },
-                valueListenable: playingVideo,
+                valueListenable: _playingVideo,
               ),
             ),
             onTap: () => playVideo(item),
@@ -225,10 +225,11 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
   }
 
   /// 构造播放列表
-  buildPlaylistBody(List<List<VideoInfo>> list) {
+  buildPlaylistBody(List<List<VideoInfo>> list, TabController tabController) {
     return Container(
       height: 36,
       child: TabBarView(
+        controller: tabController,
         children: list.map((e) => buildPlaylistItem(e)).toList(),
       ),
     );
@@ -259,6 +260,9 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
 
   /// 播放
   playVideo(VideoInfo video) async {
+    if (video == _playingVideo.value) {
+      return;
+    }
     if (isLoading) {
       return;
     }
@@ -266,12 +270,58 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
     try {
       var globalConfig = await httpClient.loadGlobalPlayConfig();
       var playConfig = await httpClient.loadVideoPlayConfig(video, globalConfig);
-      playingVideo.value = video;
-      playingVideoUrl.value = playConfig.purlf! + playConfig.vurl!;
+      _playingVideo.value = video;
+      var videoUrl = Uri.decodeFull(playConfig.vurl!);
+      if (videoUrl.endsWith(".mp4") || videoUrl.endsWith(".m3u8")) {
+        _playingVideoUrl.value = videoUrl;
+        return;
+      }
+      _playingVideoUrl.value = await parseWebviewVideoUrl(playConfig.purlf! + playConfig.vurl!);
     } on DioError catch (err) {
       Fluttertoast.showToast(msg: "播放失败:${err.message}", gravity: ToastGravity.CENTER);
+    } catch (err) {
+      Fluttertoast.showToast(msg: "播放失败:${err.toString()}", gravity: ToastGravity.CENTER);
     } finally {
       isLoading = false;
     }
+  }
+
+  /// 解析webview播放器中的链接
+  parseWebviewVideoUrl(String webviewUrl) async {
+    var result = await showDialog(
+      context: context,
+      builder: (context) {
+        Completer<String> completer = Completer();
+        completer.future.then((value) => Navigator.pop(context, value)).catchError((err) => Navigator.pop(context, err));
+        return Center(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              width: 100,
+              height: 100,
+              child: WebviewVideoUrlParser(result: completer, webviewUrl: webviewUrl),
+            ),
+          ),
+        );
+      },
+    );
+    if (result == null || result == "timeout") {
+      throw "解析播放链接超时";
+    }
+    return result;
+  }
+
+  /// 自动播放下一集
+  handleVideoEnd(List<VideoInfo> playlist) {
+    var index = playlist.indexOf(_playingVideo.value);
+    if (index == -1) {
+      print("没在播放列表找到");
+      return;
+    }
+    if (index == playlist.length - 1) {
+      print("最后一集了");
+      return;
+    }
+    playVideo(playlist.elementAt(index + 1));
   }
 }

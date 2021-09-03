@@ -1,15 +1,18 @@
-import 'dart:async';
+import 'package:flick_video_player/flick_video_player.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:video_player/video_player.dart';
 
 /// Webview播放器
 /// 1.如果videoUrl是mp4或m3u8则直接播放
 /// 2.否则初始化webview获取播放链接
 /// 3.播放webview拿到的链接
 class VideoPlayer extends StatefulWidget {
-  final String url;
+  /// 视频链接
+  final String videoUrl;
+  final Function? onVideoEnd;
 
-  const VideoPlayer({Key? key, required this.url}) : super(key: key);
+  VideoPlayer({Key? key, required this.videoUrl, this.onVideoEnd}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -18,87 +21,43 @@ class VideoPlayer extends StatefulWidget {
 }
 
 class VideoPlayerState extends State<VideoPlayer> {
-  /// Webview
-  Completer<WebViewController> _webviewController = Completer();
+  /// 播放器
+  late FlickManager _flickManager;
 
   @override
   void initState() {
     super.initState();
-    loadWebviewUrl(url: widget.url);
+    _flickManager = FlickManager(
+      videoPlayerController: VideoPlayerController.network(widget.videoUrl),
+      onVideoEnd: widget.onVideoEnd,
+    );
   }
 
   @override
   void dispose() {
-    loadWebviewUrl();
+    _flickManager.dispose();
     super.dispose();
-  }
-  Future<void> loadWebviewUrl({url = "about:blank"}) async {
-    var controller = await _webviewController.future;
-    controller.loadUrl(url, headers: {'Referer': url});
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 250,
-      child: WebView(
-        initialUrl: "about:blank",
-        javascriptMode: JavascriptMode.unrestricted,
-        allowsInlineMediaPlayback: true,
-        onWebViewCreated: (controller) {
-          _webviewController.complete(controller);
-        },
-        onPageStarted: (url) {
-          print("load $url");
-        },
+      child: FlickVideoPlayer(
+        flickManager: _flickManager,
+        flickVideoWithControlsFullscreen: FlickVideoWithControls(
+          controls: const FlickPortraitControls(),
+          videoFit: BoxFit.contain,
+        ),
       ),
     );
   }
 
   @override
   void didUpdateWidget(VideoPlayer oldWidget) {
-    if (oldWidget.url != widget.url) {
-      loadWebviewUrl(url: widget.url);
-    }
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.videoUrl != widget.videoUrl) {
+      _flickManager.handleChangeVideo(VideoPlayerController.network(widget.videoUrl));
+    }
   }
-//
-// /// 查找video的链接
-// void findVideoUrl(String url) {
-//   _timer?.cancel();
-//   var count = 0;
-//   _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
-//     var controller = await _webviewController?.future;
-//     var videoUrl = await controller?.evaluateJavascript("document.querySelector('video') && document.querySelector('video').src");
-//     if (videoUrl != "<null>" || ++count >= 60) {
-//       timer.cancel();
-//     }
-//     if (videoUrl != '<null>') {
-//       stopWebview();
-//       setState(() {
-//         _webviewUrl = null;
-//         _flickManager = FlickManager(videoPlayerController: VideoPlayerController.network(videoUrl!));
-//       });
-//     }
-//   });
-// }
-//
-// /// 解析视频链接
-// Future<void> loadVideoUrl() async {
-//   // 停止播放
-//   stopWebview();
-//   _flickManager?.flickControlManager?.pause();
-//   if (widget.url.endsWith(".mp4") || widget.url.endsWith(".m3u8")) {
-//     setState(() {
-//       _flickManager = FlickManager(videoPlayerController: VideoPlayerController.network(widget.url));
-//     });
-//     return;
-//   }
-//
-//   // 初始化webview进行解析
-//   _webviewController = Completer();
-//   setState(() {
-//     _webviewUrl = widget.url;
-//   });
-// }
 }

@@ -4,14 +4,16 @@ import 'package:flutter/material.dart';
 
 /// 播放列表表头
 class PlaylistsBar extends StatelessWidget {
+  final TabController tabController;
   final List<List<VideoInfo>> playlists;
   final Widget? trailing;
 
-  const PlaylistsBar({Key? key, required this.playlists, this.trailing}) : super(key: key);
+  const PlaylistsBar({Key? key, required this.playlists, this.trailing, required this.tabController}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var tabBar = TabBar(
+      controller: tabController,
       indicatorColor: Colors.orange,
       labelColor: Colors.orange,
       unselectedLabelColor: Colors.black,
