@@ -30,7 +30,7 @@ class VideoPlayerState extends State<VideoPlayer> {
   void initState() {
     super.initState();
     _flickManager = FlickManager(
-      videoPlayerController: VideoPlayerController.network(widget.videoUrl),
+      videoPlayerController: VideoPlayerController.network(widget.videoUrl, httpHeaders: {'Referer': widget.videoUrl}),
       onVideoEnd: widget.onVideoEnd,
     );
   }
@@ -85,7 +85,7 @@ class VideoPlayerState extends State<VideoPlayer> {
   void didUpdateWidget(VideoPlayer oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.videoUrl != widget.videoUrl) {
-      _flickManager.handleChangeVideo(VideoPlayerController.network(widget.videoUrl));
+      _flickManager.handleChangeVideo(VideoPlayerController.network(widget.videoUrl, httpHeaders: {'Referer': widget.videoUrl}));
     }
   }
 }
