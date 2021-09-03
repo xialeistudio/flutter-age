@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:age/components/detail_animation_info.dart';
 import 'package:age/components/item_grid_sliver.dart';
 import 'package:age/components/title_bar.dart';
-import 'package:age/components/video_player_widget.dart';
+import 'package:age/components/webview_player.dart';
 import 'package:age/lib/data_manager.dart';
 import 'package:age/lib/http/client.dart';
 import 'package:age/lib/model/album_info.dart';
@@ -123,7 +123,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
                 if (value == "") {
                   return DetailAnimationInfo(info: animationInfo);
                 }
-                return VideoPlayerWidget(url: value);
+                return WebviewPlayer(url: value);
               },
               valueListenable: playingVideoUrl,
             ),
@@ -266,18 +266,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
     try {
       var globalConfig = await httpClient.loadGlobalPlayConfig();
       var playConfig = await httpClient.loadVideoPlayConfig(video, globalConfig);
-      var videoUrl = Uri.decodeFull(playConfig.vurl!);
-      if (videoUrl.contains("404.mp4")) {
-        Fluttertoast.showToast(msg: "播放失败: 404", gravity: ToastGravity.CENTER);
-        return;
-      }
       playingVideo.value = video;
-      if (videoUrl.endsWith(".mp4") || videoUrl.endsWith(".m3u8")) {
-        // 直接使用视频链接播放
-        playingVideoUrl.value = videoUrl;
-        return;
-      }
-      // 使用webview
       playingVideoUrl.value = playConfig.purlf! + playConfig.vurl!;
     } on DioError catch (err) {
       Fluttertoast.showToast(msg: "播放失败:${err.message}", gravity: ToastGravity.CENTER);
