@@ -36,18 +36,16 @@ class UserPageState extends State<UserPage> {
     return Scaffold(
       appBar: buildMainAppBar(context, title: "我的"),
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            CupertinoSliverRefreshControl(
-              refreshTriggerPullDistance: 100.0,
-              refreshIndicatorExtent: 60.0,
-              onRefresh: loadData,
-            ),
-            buildTitleBarSliver(context, "历史记录", Icons.history, () => Navigator.pushNamed(context, "/history")),
-            buildDataListSliver(historyList),
-            buildTitleBarSliver(context, "收藏列表", Icons.favorite, () => Navigator.pushNamed(context, "/favorite")),
-            buildDataListSliver(favoriteList),
-          ],
+        child: RefreshIndicator(
+          onRefresh: loadData,
+          child: CustomScrollView(
+            slivers: [
+              buildTitleBarSliver(context, "历史记录", Icons.history, () => Navigator.pushNamed(context, "/history")),
+              buildDataListSliver(historyList),
+              buildTitleBarSliver(context, "收藏列表", Icons.favorite, () => Navigator.pushNamed(context, "/favorite")),
+              buildDataListSliver(favoriteList),
+            ],
+          ),
         ),
       ),
     );

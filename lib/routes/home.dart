@@ -51,9 +51,7 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildMainAppBar(context, title: "首页"),
-      body: SafeArea(
-        child: buildBody(context),
-      ),
+      body: SafeArea(child: buildBody(context)),
     );
   }
 
@@ -61,54 +59,51 @@ class HomePageState extends State<HomePage> {
     if (_weeklyList == null) {
       return Center(child: CupertinoActivityIndicator());
     }
-    return CustomScrollView(
-      physics: BouncingScrollPhysics(),
-      slivers: [
-        CupertinoSliverRefreshControl(
-          refreshTriggerPullDistance: 100.0,
-          refreshIndicatorExtent: 60.0,
-          onRefresh: () => loadList(cached: false),
-        ),
-        HomeSwipeSliver(),
-        SliverToBoxAdapter(child: TitleBar(title: "每周放送", iconData: Icons.calendar_today)),
-        SliverToBoxAdapter(child: WeeklyTabView(weeklyList: _weeklyList!)),
-        SliverToBoxAdapter(
-          child: TitleBar(
-            title: "每日推荐",
-            iconData: Icons.recommend,
-            trailing: SizedBox(
-              width: 24,
-              height: 24,
-              child: IconButton(
-                onPressed: () => Navigator.pushNamed(context, "/recommend"),
-                icon: Icon(Icons.arrow_forward_ios),
-                iconSize: 18,
-                color: Colors.black38,
-                padding: const EdgeInsets.all(0),
+    return RefreshIndicator(
+      child: CustomScrollView(
+        slivers: [
+          HomeSwipeSliver(),
+          SliverToBoxAdapter(child: TitleBar(title: "每周放送", iconData: Icons.calendar_today)),
+          SliverToBoxAdapter(child: WeeklyTabView(weeklyList: _weeklyList!)),
+          SliverToBoxAdapter(
+            child: TitleBar(
+              title: "每日推荐",
+              iconData: Icons.recommend,
+              trailing: SizedBox(
+                width: 24,
+                height: 24,
+                child: IconButton(
+                  onPressed: () => Navigator.pushNamed(context, "/recommend"),
+                  icon: Icon(Icons.arrow_forward_ios),
+                  iconSize: 18,
+                  color: Colors.black38,
+                  padding: const EdgeInsets.all(0),
+                ),
               ),
             ),
           ),
-        ),
-        ItemGridSliver(items: _recommendList),
-        SliverToBoxAdapter(
-          child: TitleBar(
-            title: "最近更新",
-            iconData: Icons.update,
-            trailing: Container(
-              width: 24,
-              height: 24,
-              child: IconButton(
-                onPressed: () => Navigator.pushNamed(context, "/update"),
-                icon: Icon(Icons.arrow_forward_ios),
-                iconSize: 18,
-                color: Colors.black38,
-                padding: const EdgeInsets.all(0),
+          ItemGridSliver(items: _recommendList),
+          SliverToBoxAdapter(
+            child: TitleBar(
+              title: "最近更新",
+              iconData: Icons.update,
+              trailing: Container(
+                width: 24,
+                height: 24,
+                child: IconButton(
+                  onPressed: () => Navigator.pushNamed(context, "/update"),
+                  icon: Icon(Icons.arrow_forward_ios),
+                  iconSize: 18,
+                  color: Colors.black38,
+                  padding: const EdgeInsets.all(0),
+                ),
               ),
             ),
           ),
-        ),
-        ItemGridSliver(items: _updateList),
-      ],
+          ItemGridSliver(items: _updateList),
+        ],
+      ),
+      onRefresh: () => loadList(cached: false),
     );
   }
 }

@@ -1,5 +1,4 @@
 import 'dart:core';
-import 'dart:math';
 
 import 'package:age/components/list_detail_item_widget.dart';
 import 'package:age/components/load_more_indicator.dart';
@@ -7,7 +6,6 @@ import 'package:age/components/title_bar.dart';
 import 'package:age/lib/global.dart';
 import 'package:age/lib/http/client.dart';
 import 'package:age/lib/model/list_detail_item.dart';
-import 'package:age/routes/search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -67,37 +65,35 @@ class CatalogPageState extends State<CatalogPage> {
   /// 构造列表
   Widget buildListView() {
     return SafeArea(
-      child: LoadMoreIndicator(
-        hasMore: hasMore,
-        onLoadMore: onLoadMore,
-        child: CustomScrollView(
-          slivers: [
-            CupertinoSliverRefreshControl(
-              refreshTriggerPullDistance: 100.0,
-              refreshIndicatorExtent: 60.0,
-              onRefresh: () => onRefresh(cached: false),
-            ),
-            ListFilterSliver(filterData: filterData!, filter: filter, onChange: onFilterChange),
-            SliverPadding(padding: const EdgeInsets.only(bottom: 10)),
-            SliverToBoxAdapter(
-              child: TitleBar(
-                title: "动漫列表",
-                trailing: Row(children: [Text("共"), Text("$count", style: TextStyle(color: Colors.orange)), Text("部")]),
-                iconData: Icons.list,
+      child: RefreshIndicator(
+        onRefresh: () => onRefresh(cached: false),
+        child: LoadMoreIndicator(
+          hasMore: hasMore,
+          onLoadMore: onLoadMore,
+          child: CustomScrollView(
+            slivers: [
+              ListFilterSliver(filterData: filterData!, filter: filter, onChange: onFilterChange),
+              SliverPadding(padding: const EdgeInsets.only(bottom: 10)),
+              SliverToBoxAdapter(
+                child: TitleBar(
+                  title: "动漫列表",
+                  trailing: Row(children: [Text("共"), Text("$count", style: TextStyle(color: Colors.orange)), Text("部")]),
+                  iconData: Icons.list,
+                ),
               ),
-            ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                  if (index.isOdd) {
-                    return Divider();
-                  }
-                  return ListDetailItemWidget(item: list[index ~/ 2]);
-                },
-                childCount: list.length * 2,
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    if (index.isOdd) {
+                      return Divider();
+                    }
+                    return ListDetailItemWidget(item: list[index ~/ 2]);
+                  },
+                  childCount: list.length * 2,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

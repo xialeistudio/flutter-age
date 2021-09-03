@@ -33,26 +33,24 @@ class RecommendPageState extends State<RecommendPage> {
     return Scaffold(
       appBar: AppBar(title: Text("每日推荐")),
       body: SafeArea(
-        child: LoadMoreIndicator(
-          onLoadMore: onLoadMore,
-          hasMore: hasMore,
-          child: CustomScrollView(
-            slivers: [
-              CupertinoSliverRefreshControl(
-                refreshTriggerPullDistance: 100.0,
-                refreshIndicatorExtent: 60.0,
-                onRefresh: () => onRefresh(cached: false),
-              ),
-              SliverToBoxAdapter(
-                child: TitleBar(
-                  title: "推荐列表",
-                  iconData: Icons.recommend,
-                  trailing: Row(children: [Text("共"), Text("$count", style: TextStyle(color: Colors.orange)), Text("部")]),
+        child: RefreshIndicator(
+          child: LoadMoreIndicator(
+            onLoadMore: onLoadMore,
+            hasMore: hasMore,
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: TitleBar(
+                    title: "推荐列表",
+                    iconData: Icons.recommend,
+                    trailing: Row(children: [Text("共"), Text("$count", style: TextStyle(color: Colors.orange)), Text("部")]),
+                  ),
                 ),
-              ),
-              ItemGridSliver(items: list),
-            ],
+                ItemGridSliver(items: list),
+              ],
+            ),
           ),
+          onRefresh: () => onRefresh(cached: false),
         ),
       ),
     );

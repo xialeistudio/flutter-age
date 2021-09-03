@@ -77,7 +77,6 @@ class SearchBarDelegate extends SearchDelegate<String> {
     var list = data.first;
     var count = data.second;
     return CustomScrollView(
-      physics: BouncingScrollPhysics(),
       slivers: [
         SliverToBoxAdapter(
           child: TitleBar(

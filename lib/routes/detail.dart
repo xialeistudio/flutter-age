@@ -115,7 +115,6 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
     var playlists = animationInfo.playlists!.where((element) => element.length > 0).toList();
     var tabController = TabController(length: playlists.length, vsync: this);
     return CustomScrollView(
-      physics: BouncingScrollPhysics(),
       slivers: [
         SliverToBoxAdapter(
           child: ValueListenableBuilder(

@@ -89,7 +89,8 @@ class WebviewVideoUrlParserState extends State<WebviewVideoUrlParser> {
       var controller = await _controller.future;
       var videoUrl = await controller.evaluateJavascript("document.querySelector('video') && document.querySelector('video').src");
       // 获取成功
-      if (videoUrl != "<null>") {
+      if (!videoUrl.contains('null')) {
+        videoUrl = videoUrl.replaceAll('"', '');
         loadWebviewUrl();
         timer.cancel();
         widget.result.complete(videoUrl);

@@ -32,24 +32,22 @@ class RankPageState extends State<RankPage> {
     return Scaffold(
       appBar: buildMainAppBar(context, title: "排行榜"),
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            CupertinoSliverRefreshControl(
-              refreshTriggerPullDistance: 100.0,
-              refreshIndicatorExtent: 60.0,
-              onRefresh: () => onRefresh(),
-            ),
-            buildOptionsSliver(),
-            SliverToBoxAdapter(
-              child: TitleBar(
-                title: "排行榜",
-                iconData: Icons.timeline,
-                trailing: Row(children: [Text("前"), Text("${list.length}", style: TextStyle(color: Colors.orange)), Text("部")]),
+        child: RefreshIndicator(
+          onRefresh: onRefresh,
+          child: CustomScrollView(
+            slivers: [
+              buildOptionsSliver(),
+              SliverToBoxAdapter(
+                child: TitleBar(
+                  title: "排行榜",
+                  iconData: Icons.timeline,
+                  trailing: Row(children: [Text("前"), Text("${list.length}", style: TextStyle(color: Colors.orange)), Text("部")]),
+                ),
               ),
-            ),
-            buildListSliver(),
-            SliverPadding(padding: const EdgeInsets.only(top: 20)),
-          ],
+              buildListSliver(),
+              SliverPadding(padding: const EdgeInsets.only(top: 20)),
+            ],
+          ),
         ),
       ),
     );
@@ -97,7 +95,7 @@ class RankPageState extends State<RankPage> {
     });
   }
 
-  onRefresh() async {
+ Future<void> onRefresh() async {
     var data = await httpClient.loadRank(year: year, cached: false);
     setState(() {
       list = data.first;
