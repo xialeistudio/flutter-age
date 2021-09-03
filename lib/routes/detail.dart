@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:age/components/detail_animation_info.dart';
 import 'package:age/components/item_grid_sliver.dart';
 import 'package:age/components/title_bar.dart';
-import 'package:age/components/webview_player.dart';
+import 'package:age/components/video_player.dart';
 import 'package:age/lib/data_manager.dart';
 import 'package:age/lib/http/client.dart';
 import 'package:age/lib/model/album_info.dart';
@@ -123,7 +123,7 @@ class DetailPageState extends State<DetailPage> with TickerProviderStateMixin {
                 if (value == "") {
                   return DetailAnimationInfo(info: animationInfo);
                 }
-                return WebviewPlayer(url: value);
+                return VideoPlayer(url: value);
               },
               valueListenable: playingVideoUrl,
             ),
