@@ -1,6 +1,8 @@
 import 'package:flick_video_player/flick_video_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:video_player/video_player.dart';
 
 /// Webview播放器
@@ -41,15 +43,42 @@ class VideoPlayerState extends State<VideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 250,
-      child: FlickVideoPlayer(
-        flickManager: _flickManager,
-        flickVideoWithControlsFullscreen: FlickVideoWithControls(
-          controls: const FlickPortraitControls(),
-          videoFit: BoxFit.contain,
+    return Column(
+      children: [
+        Container(
+          height: 250,
+          child: FlickVideoPlayer(
+            flickManager: _flickManager,
+            flickVideoWithControlsFullscreen: FlickVideoWithControls(
+              controls: const FlickPortraitControls(),
+              videoFit: BoxFit.contain,
+            ),
+          ),
         ),
-      ),
+        buildVideoUrlView(),
+      ],
+    );
+  }
+
+  /// 视频链接
+  Widget buildVideoUrlView() {
+    var widgets = [
+      Text("视频链接:"),
+      Expanded(child: Text(widget.videoUrl, style: TextStyle(fontSize: 10))),
+      InkWell(
+        onTap: () async {
+          await Clipboard.setData(ClipboardData(text: widget.videoUrl));
+          Fluttertoast.showToast(msg: "复制成功", gravity: ToastGravity.CENTER);
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(0),
+          child: Text("复制"),
+        ),
+      )
+    ];
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Flex(children: widgets, direction: Axis.horizontal),
     );
   }
 
