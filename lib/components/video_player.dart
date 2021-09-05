@@ -48,8 +48,10 @@ class VideoPlayerState extends State<VideoPlayer> {
         Container(
           child: FlickVideoPlayer(
             flickManager: _flickManager,
-            flickVideoWithControlsFullscreen: FlickVideoWithControls(
-              controls: const FlickPortraitControls(),
+            flickVideoWithControls: FlickVideoWithControls(
+              controls: FlickPortraitControls(
+                iconSize: 32,
+              ),
               videoFit: BoxFit.contain,
             ),
           ),
