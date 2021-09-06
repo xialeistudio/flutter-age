@@ -65,33 +65,18 @@ class DetailAnimationInfo extends StatelessWidget {
       Container(
         decoration: BoxDecoration(color: Colors.white),
         padding: const EdgeInsets.all(10),
-        child: Flex(
-          direction: Axis.horizontal,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.local_fire_department_outlined, color: Colors.orange, size: 20),
-                SizedBox(width: 4),
-                Text("${info.rankCount}"),
-              ],
-            ),
-            Row(
-              children: [
-                Icon(Icons.comment_outlined, color: Colors.orange, size: 20),
-                SizedBox(width: 4),
-                Text("${info.commentCount!}"),
-              ],
-            ),
-            Row(
-              children: [
-                Icon(Icons.star_outline, color: Colors.orange, size: 20),
-                SizedBox(width: 4),
-                Text("${info.collectCount!}"),
-              ],
-            ),
-          ],
+        child: IconTheme(
+          data: IconThemeData(size: 20, color: Colors.orange),
+          child: Flex(
+            direction: Axis.horizontal,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(children: [Icon(Icons.local_fire_department_outlined), SizedBox(width: 4), Text("${info.rankCount}")]),
+              Row(children: [Icon(Icons.comment_outlined), SizedBox(width: 4), Text("${info.commentCount!}")]),
+              Row(children: [Icon(Icons.star_outline), SizedBox(width: 4), Text("${info.collectCount!}")]),
+            ],
+          ),
         ),
       ),
     ]);
