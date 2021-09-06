@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 
 /// 搜索页
 class SearchBarDelegate extends SearchDelegate<String> {
+  @override
+  String? get searchFieldLabel => "搜索";
   final List<ListDetailItem> list = [];
 
   @override
