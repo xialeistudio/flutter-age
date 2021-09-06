@@ -15,16 +15,39 @@ class RankPage extends StatefulWidget {
 }
 
 class RankPageState extends State<RankPage> {
-  List<CountListItem> list = [];
-  int count = 0;
-  int year = 0;
-  List<int> years = [0];
+  final ScrollController _scrollController = ScrollController();
+
+  List<CountListItem> _list = [];
+  int _count = 0;
+  int _year = 0;
+  List<int> _years = [0];
+  bool _showGoTopButton = false;
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(listenForGoTop);
     initYears();
     onRefresh();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  /// 返回顶部监听
+  void listenForGoTop() {
+    if (_scrollController.offset < 1000 && _showGoTopButton) {
+      setState(() {
+        _showGoTopButton = false;
+      });
+    } else if (_scrollController.offset >= 1000 && !_showGoTopButton) {
+      setState(() {
+        _showGoTopButton = true;
+      });
+    }
   }
 
   @override
@@ -35,13 +58,14 @@ class RankPageState extends State<RankPage> {
         child: RefreshIndicator(
           onRefresh: onRefresh,
           child: CustomScrollView(
+            controller: _scrollController,
             slivers: [
               buildOptionsSliver(),
               SliverToBoxAdapter(
                 child: TitleBar(
                   title: "排行榜",
                   iconData: Icons.timeline,
-                  trailing: Row(children: [Text("前"), Text("${list.length}", style: TextStyle(color: Colors.orange)), Text("部")]),
+                  trailing: Row(children: [Text("前"), Text("${_list.length}", style: TextStyle(color: Colors.orange)), Text("部")]),
                 ),
               ),
               buildListSliver(),
@@ -50,6 +74,14 @@ class RankPageState extends State<RankPage> {
           ),
         ),
       ),
+      floatingActionButton: _showGoTopButton
+          ? FloatingActionButton(
+              onPressed: () {
+                _scrollController.animateTo(0, duration: Duration(milliseconds: 300), curve: Curves.ease);
+              },
+              child: Icon(Icons.arrow_upward),
+            )
+          : null,
     );
   }
 
@@ -60,7 +92,7 @@ class RankPageState extends State<RankPage> {
           if (index.isOdd) {
             return Divider();
           }
-          var item = list[index ~/ 2];
+          var item = _list[index ~/ 2];
           var color = Colors.grey;
           if (index < 10) {
             color = Colors.orange;
@@ -80,7 +112,7 @@ class RankPageState extends State<RankPage> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 10),
           );
         },
-        childCount: list.length * 2,
+        childCount: _list.length * 2,
       ),
     );
   }
@@ -91,15 +123,15 @@ class RankPageState extends State<RankPage> {
       options.add(i);
     }
     setState(() {
-      years = options;
+      _years = options;
     });
   }
 
- Future<void> onRefresh() async {
-    var data = await httpClient.loadRank(year: year, cached: false);
+  Future<void> onRefresh() async {
+    var data = await httpClient.loadRank(year: _year, cached: false);
     setState(() {
-      list = data.first;
-      count = data.second;
+      _list = data.first;
+      _count = data.second;
     });
   }
 
@@ -123,8 +155,8 @@ class RankPageState extends State<RankPage> {
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) {
                     var textColor = Colors.black;
-                    var option = years[index];
-                    if (year == option) {
+                    var option = _years[index];
+                    if (_year == option) {
                       textColor = Colors.orange;
                     }
                     return InkWell(
@@ -136,7 +168,7 @@ class RankPageState extends State<RankPage> {
                       onTap: () => onChange(option),
                     );
                   },
-                  itemCount: years.length,
+                  itemCount: _years.length,
                 ),
               ),
             ],
@@ -149,7 +181,7 @@ class RankPageState extends State<RankPage> {
 
   onChange(int option) {
     setState(() {
-      year = option;
+      _year = option;
       onRefresh();
     });
   }

@@ -17,40 +17,50 @@ class CatalogPage extends StatefulWidget {
 }
 
 class CatalogPageState extends State<CatalogPage> {
-  Map<String, List<String>>? filterData;
-  List<ListDetailItem> list = [];
-  int count = 0;
-  int page = 1;
-  bool hasMore = true;
   final int size = 10;
-  Map<String, String> filter = {'order': '更新时间'};
+  final ScrollController _scrollController = ScrollController();
+
+  Map<String, List<String>>? _filterData;
+  List<ListDetailItem> _list = [];
+  int _count = 0;
+  int _page = 1;
+  bool _hasMore = true;
+  Map<String, String> _filter = {'order': '更新时间'};
+  bool _showGoTopButton = false;
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(listenForGoTop);
     onRefresh();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   /// 下拉刷新
   Future<void> onRefresh({cached = true}) async {
-    page = 1;
-    var data = await httpClient.loadList(page: page, cached: cached, query: filter);
+    _page = 1;
+    var data = await httpClient.loadList(page: _page, cached: cached, query: _filter);
     setState(() {
-      filterData = data.first;
-      list = data.second;
-      count = data.third;
-      hasMore = data.second.length >= size;
+      _filterData = data.first;
+      _list = data.second;
+      _count = data.third;
+      _hasMore = data.second.length >= size;
     });
   }
 
   /// 加载更多
   Future<void> onLoadMore() async {
-    var data = await httpClient.loadList(page: ++page, cached: false, query: filter);
+    var data = await httpClient.loadList(page: ++_page, cached: false, query: _filter);
     setState(() {
-      filterData = data.first;
-      list.addAll(data.second);
-      count = data.third;
-      hasMore = data.second.length >= size;
+      _filterData = data.first;
+      _list.addAll(data.second);
+      _count = data.third;
+      _hasMore = data.second.length >= size;
     });
   }
 
@@ -58,7 +68,15 @@ class CatalogPageState extends State<CatalogPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: buildMainAppBar(context, title: "全部动漫"),
-      body: filterData == null ? Center(child: CupertinoActivityIndicator()) : buildListView(),
+      body: _filterData == null ? Center(child: CupertinoActivityIndicator()) : buildListView(),
+      floatingActionButton: _showGoTopButton
+          ? FloatingActionButton(
+              onPressed: () {
+                _scrollController.animateTo(0, duration: Duration(milliseconds: 300), curve: Curves.ease);
+              },
+              child: Icon(Icons.arrow_upward),
+            )
+          : null,
     );
   }
 
@@ -68,16 +86,17 @@ class CatalogPageState extends State<CatalogPage> {
       child: RefreshIndicator(
         onRefresh: () => onRefresh(cached: false),
         child: LoadMoreIndicator(
-          hasMore: hasMore,
+          hasMore: _hasMore,
           onLoadMore: onLoadMore,
           child: CustomScrollView(
+            controller: _scrollController,
             slivers: [
-              ListFilterSliver(filterData: filterData!, filter: filter, onChange: onFilterChange),
+              ListFilterSliver(filterData: _filterData!, filter: _filter, onChange: onFilterChange),
               SliverPadding(padding: const EdgeInsets.only(bottom: 10)),
               SliverToBoxAdapter(
                 child: TitleBar(
                   title: "动漫列表",
-                  trailing: Row(children: [Text("共"), Text("$count", style: TextStyle(color: Colors.orange)), Text("部")]),
+                  trailing: Row(children: [Text("共"), Text("$_count", style: TextStyle(color: Colors.orange)), Text("部")]),
                   iconData: Icons.list,
                 ),
               ),
@@ -87,9 +106,9 @@ class CatalogPageState extends State<CatalogPage> {
                     if (index.isOdd) {
                       return Divider();
                     }
-                    return ListDetailItemWidget(item: list[index ~/ 2]);
+                    return ListDetailItemWidget(item: _list[index ~/ 2]);
                   },
-                  childCount: list.length * 2,
+                  childCount: _list.length * 2,
                 ),
               ),
             ],
@@ -102,9 +121,22 @@ class CatalogPageState extends State<CatalogPage> {
   /// 筛选器变更回调
   void onFilterChange(String field, String value) {
     setState(() {
-      filter[field] = value;
+      _filter[field] = value;
       onRefresh();
     });
+  }
+
+  /// 返回顶部监听
+  void listenForGoTop() {
+    if (_scrollController.offset < 1000 && _showGoTopButton) {
+      setState(() {
+        _showGoTopButton = false;
+      });
+    } else if (_scrollController.offset >= 1000 && !_showGoTopButton) {
+      setState(() {
+        _showGoTopButton = true;
+      });
+    }
   }
 }
 

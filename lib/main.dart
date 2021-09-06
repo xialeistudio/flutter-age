@@ -24,6 +24,9 @@ void main() {
       dividerTheme: DividerThemeData(
         space: 1,
       ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: Colors.orange,
+      ),
     ),
     routes: {
       '/detail': (context) {
