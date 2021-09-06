@@ -16,10 +16,7 @@ class DetailAnimationInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(children: [
       Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(image: NetworkImage(info.cover!.asUrl()), fit: BoxFit.fill),
-          color: Colors.black54
-        ),
+        decoration: BoxDecoration(image: DecorationImage(image: NetworkImage(info.cover!.asUrl()), fit: BoxFit.fill), color: Colors.black54),
         child: ClipRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
@@ -33,51 +30,29 @@ class DetailAnimationInfo extends StatelessWidget {
                   Expanded(
                     child: Container(
                       padding: const EdgeInsets.only(left: 10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // 标题
-                          Text(
-                            info.title!,
-                            style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(height: 8),
-                          // 元数据
-                          Text(
-                            "${info.region!} · ${info.type!} · ${info.author!}",
-                            style: TextStyle(color: Colors.white, fontSize: 14),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            "原版名称：${info.originTitle}",
-                            style: TextStyle(color: Colors.white, fontSize: 14),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            "系列名称：${info.collectionTitle}",
-                            style: TextStyle(color: Colors.white, fontSize: 14),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            "首播时间：${info.firstPlayTime}",
-                            style: TextStyle(color: Colors.white, fontSize: 14),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            "剧情类型：${info.storyType!}",
-                            style: TextStyle(color: Colors.white, fontSize: 14),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            "播放状态：${info.playStatus!}",
-                            style: TextStyle(color: Colors.white, fontSize: 14),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            "更新时间：${info.updateTime!}",
-                            style: TextStyle(color: Colors.white, fontSize: 14),
-                          ),
-                        ],
+                      child: DefaultTextStyle(
+                        style: TextStyle(color: Colors.white, fontSize: 14),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // 标题
+                            Text(info.title!, style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
+                            SizedBox(height: 8),
+                            Text("${info.region!} · ${info.type!} · ${info.author!}"),
+                            SizedBox(height: 8),
+                            Text("原版名称：${info.originTitle}"),
+                            SizedBox(height: 8),
+                            Text("系列名称：${info.collectionTitle}"),
+                            SizedBox(height: 8),
+                            Text("首播时间：${info.firstPlayTime}"),
+                            SizedBox(height: 8),
+                            Text("剧情类型：${info.storyType!}"),
+                            SizedBox(height: 8),
+                            Text("播放状态：${info.playStatus!}"),
+                            SizedBox(height: 8),
+                            Text("更新时间：${info.updateTime!}"),
+                          ],
+                        ),
                       ),
                     ),
                   ),

@@ -150,10 +150,7 @@ class ListFilterSliver extends StatelessWidget {
             child: Flex(
               direction: Axis.horizontal,
               children: [
-                SizedBox(
-                  width: 40,
-                  child: Text(name, style: TextStyle(color: Colors.black), textAlign: TextAlign.right),
-                ),
+                SizedBox(width: 40, child: Text(name, style: TextStyle(color: Colors.black), textAlign: TextAlign.right)),
                 SizedBox(width: 5),
                 Expanded(
                   child: ListView.builder(

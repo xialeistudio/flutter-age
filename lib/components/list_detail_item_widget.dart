@@ -21,41 +21,24 @@ class ListDetailItemWidget extends StatelessWidget {
             Expanded(
               child: Container(
                 padding: const EdgeInsets.only(left: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // 标题
-                    Text(
-                      item.title!,
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 8),
-                    // 元数据
-                    Text(
-                      "${item.type!} · ${item.author!}",
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      "原版名称：${item.originTitle}",
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      "首播时间：${item.firstPlayTime}",
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      "剧情类型：${item.storyTypes!.join(" ")}",
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      "播放状态：${item.playStatus!}",
-                      style: TextStyle(fontSize: 14),
-                    ),
-                  ],
+                child: DefaultTextStyle(
+                  style: TextStyle(fontSize: 14, color: Colors.black),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(item.title!, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 8),
+                      Text("${item.type!} · ${item.author!}"),
+                      SizedBox(height: 8),
+                      Text("原版名称：${item.originTitle}"),
+                      SizedBox(height: 8),
+                      Text("首播时间：${item.firstPlayTime}"),
+                      SizedBox(height: 8),
+                      Text("剧情类型：${item.storyTypes!.join(" ")}"),
+                      SizedBox(height: 8),
+                      Text("播放状态：${item.playStatus!}"),
+                    ],
+                  ),
                 ),
               ),
             ),
